@@ -52,8 +52,7 @@ export function useDeleteInventoryItem() {
       }
     },
 
-    onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: inventoryKeys.lists() });
-    },
+    // NOTE: No invalidateQueries — on Vercel serverless, refetching
+    // would restore deleted items from a different instance's seed data.
   });
 }

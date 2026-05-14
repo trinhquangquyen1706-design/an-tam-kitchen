@@ -63,8 +63,7 @@ export function useBulkAddInventory() {
       return { success, failed, errors };
     },
 
-    onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: inventoryKeys.lists() });
-    },
+    // NOTE: No invalidateQueries — on Vercel serverless, refetching
+    // would overwrite newly added items with seed-only data.
   });
 }

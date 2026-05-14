@@ -3,8 +3,13 @@
  *
  * Full combo:
  *  onMutate  → cancelQueries → snapshot cache → setQueryData (optimistic)
+ *  onSuccess → replace optimistic item with real server data
  *  onError   → rollback bằng snapshot
- *  onSettled → invalidateQueries (sync truth)
+ *
+ * NOTE: We do NOT invalidate/refetch after mutation because on Vercel
+ * serverless, each GET may hit a different instance that doesn't have
+ * the newly added item in memory. The React Query cache is the
+ * source of truth for the current session.
  */
 
 "use client";
@@ -20,6 +25,8 @@ import type { InventoryListData } from "@/hooks/queries/use-inventory-list";
 type AddInventoryContext = {
   /** Snapshot of the cache before optimistic update, used for rollback */
   previousData: InventoryListData | undefined;
+  /** Temp ID of the optimistic item so we can replace it on success */
+  optimisticId: string;
 };
 
 export function useAddInventoryItem() {
@@ -56,12 +63,13 @@ export function useAddInventoryItem() {
       );
 
       // 3. Optimistically update the cache with a temporary item
+      const optimisticId = `optimistic-${Date.now()}`;
       queryClient.setQueryData<InventoryListData>(
         inventoryKeys.lists(),
         (old) => {
           if (!old) return old;
 
-          const optimisticItem = createOptimisticItem(input);
+          const optimisticItem = createOptimisticItem(input, optimisticId);
 
           return {
             ...old,
@@ -70,7 +78,25 @@ export function useAddInventoryItem() {
         }
       );
 
-      return { previousData };
+      return { previousData, optimisticId };
+    },
+
+    onSuccess: (realItem, _input, context) => {
+      // Replace the optimistic item with the real server data
+      // This preserves ALL existing items in cache (including previous adds)
+      queryClient.setQueryData<InventoryListData>(
+        inventoryKeys.lists(),
+        (old) => {
+          if (!old) return old;
+
+          return {
+            ...old,
+            items: old.items.map((item) =>
+              item.id === context?.optimisticId ? realItem : item
+            ),
+          };
+        }
+      );
     },
 
     onError: (_error, _input, context) => {
@@ -80,20 +106,18 @@ export function useAddInventoryItem() {
       }
     },
 
-    onSettled: () => {
-      // Always refetch to sync with server truth
-      void queryClient.invalidateQueries({ queryKey: inventoryKeys.lists() });
-    },
+    // NOTE: No onSettled/invalidateQueries! On serverless, refetching
+    // would overwrite our cache with stale seed-only data.
   });
 }
 
 /**
  * Build a temporary FoodItemViewModel for optimistic rendering.
- * This will be replaced by the real item once onSettled fires.
+ * This will be replaced by the real item once onSuccess fires.
  */
-function createOptimisticItem(input: CreateFoodInput): FoodItemViewModel {
+function createOptimisticItem(input: CreateFoodInput, id?: string): FoodItemViewModel {
   const now = new Date();
-  const tempId = `optimistic-${Date.now()}`;
+  const tempId = id || `optimistic-${Date.now()}`;
   const openedAt = input.openedAt ? new Date(`${input.openedAt}T00:00:00`) : now;
   const expiryDate = input.expiryDate
     ? new Date(`${input.expiryDate}T00:00:00`)
