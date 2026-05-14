@@ -50,6 +50,16 @@ export async function getCurrentUserId(): Promise<string | null> {
 }
 
 /**
+ * Read full token payload from cookies (includes isGuest, userId, etc.)
+ */
+export async function getCurrentTokenPayload(): Promise<Record<string, unknown> | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(COOKIE_NAME)?.value;
+  if (!token) return null;
+  return verifyToken(token);
+}
+
+/**
  * Set auth cookie ON the NextResponse object.
  * This is the correct way in Route Handlers (not via cookies() API).
  */
