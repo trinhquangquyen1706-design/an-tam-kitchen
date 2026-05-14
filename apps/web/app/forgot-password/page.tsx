@@ -54,7 +54,7 @@ export default function ForgotPasswordPage() {
             <CardHeader>
               <CardTitle className="text-lg">Đặt lại mật khẩu</CardTitle>
               <CardDescription>
-                Đây là placeholder giao diện trong lúc chờ backend
+                Chúng tôi sẽ gửi link đặt lại mật khẩu qua email
               </CardDescription>
             </CardHeader>
 
@@ -83,7 +83,7 @@ export default function ForgotPasswordPage() {
                   </div>
 
                   <Button
-                    className="h-9 w-full"
+                    className="h-11 w-full"
                     disabled={isSubmitting}
                     type="submit"
                   >
@@ -102,13 +102,14 @@ export default function ForgotPasswordPage() {
                   <div className="flex items-start gap-2 rounded-lg bg-accent/50 p-3 text-sm text-accent-foreground">
                     <Info className="mt-0.5 size-4 shrink-0" />
                     <span>
-                      Tính năng quên mật khẩu đang được chuẩn bị. Khi backend có
-                      API gửi email, form này sẽ được kết nối.
+                      Nếu email này đã đăng ký, bạn sẽ nhận được hướng dẫn
+                      đặt lại mật khẩu trong vài phút tới. Hãy kiểm tra hộp
+                      thư (bao gồm cả thư rác).
                     </span>
                   </div>
 
                   <Button
-                    className="h-9 w-full"
+                    className="h-11 w-full"
                     onClick={() => setSubmitted(false)}
                     type="button"
                     variant="outline"

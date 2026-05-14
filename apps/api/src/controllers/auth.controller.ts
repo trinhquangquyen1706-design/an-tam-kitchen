@@ -53,7 +53,15 @@ export const signup = async (req: Request, res: Response): Promise<any> => {
 
     return res
       .status(201)
-      .json({ message: "User created successfully", userId: newUser.id });
+      .json({
+        message: "User created successfully",
+        userId: newUser.id,
+        user: {
+          id: newUser.id,
+          name: newUser.name ?? undefined,
+          email: newUser.email,
+        },
+      });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res
@@ -106,7 +114,14 @@ export const login = async (req: Request, res: Response): Promise<any> => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return res.status(200).json({ message: "Login successful" });
+    return res.status(200).json({
+      message: "Login successful",
+      user: {
+        id: user.id,
+        name: user.name ?? undefined,
+        email: user.email,
+      },
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res
@@ -218,8 +233,30 @@ export const guestLogin = async (req: Request, res: Response): Promise<any> => {
       password: guestPassword,
     });
 
+    // ── Seed demo inventory items for guest ──
+    const { inventoryRepository, productRepository } = await import("../container.js");
+    const now = new Date();
+    const subDays = (d: Date, n: number) => new Date(d.getTime() - n * 86400000);
+    const addDays = (d: Date, n: number) => new Date(d.getTime() + n * 86400000);
+
+    const demoProducts = [
+      { name: "Sữa tươi", category: "dairy" as const, company: "An Tam Demo", daysBeforeOpen: 7, daysAfterOpen: 5, isGlobal: false, ownerId: user.id },
+      { name: "Tương cà", category: "sauces_spices" as const, company: "An Tam Demo", daysBeforeOpen: 180, daysAfterOpen: 30, isGlobal: false, ownerId: user.id },
+      { name: "Xúc xích", category: "meat_poultry" as const, company: "An Tam Demo", daysBeforeOpen: 10, daysAfterOpen: 4, isGlobal: false, ownerId: user.id },
+    ];
+
+    const products = await Promise.all(demoProducts.map(p => productRepository.create(p)));
+
+    const demoItems = [
+      { userId: user.id, userProductId: products[0].id, displayName: "Sữa tươi", openedAt: subDays(now, 4), expiryDate: addDays(now, 2), location: "fridge" as const, status: "use_soon" as const, notes: "Dùng cho bữa sáng hoặc pha cà phê.", quantity: "1 hộp" },
+      { userId: user.id, userProductId: products[1].id, displayName: "Tương cà", openedAt: subDays(now, 4), expiryDate: addDays(now, 18), location: "room_temp" as const, status: "fresh" as const, notes: "Để ở kệ gia vị sau khi dùng.", quantity: "1 chai" },
+      { userId: user.id, userProductId: products[2].id, displayName: "Xúc xích", openedAt: subDays(now, 5), expiryDate: addDays(now, 1), location: "fridge" as const, status: "check_before_use" as const, notes: "Đã mở gói, nên xem lại trước khi chế biến.", quantity: "300g" },
+    ];
+
+    await Promise.all(demoItems.map(item => inventoryRepository.create(item)));
+
     const accessToken = jwt.sign({ userId: user.id, isGuest: true }, JWT_SECRET, {
-      expiresIn: "2h", // Guest session shorter
+      expiresIn: "2h",
     });
 
     const isProd = process.env.NODE_ENV === "production";
@@ -230,7 +267,7 @@ export const guestLogin = async (req: Request, res: Response): Promise<any> => {
       maxAge: 2 * 60 * 60 * 1000,
     });
 
-    return res.status(200).json({ message: "Đăng nhập với tư cách khách thành công", user: { name: user.name, isGuest: true } });
+    return res.status(200).json({ message: "Đăng nhập với tư cách khách thành công", user: { id: user.id, name: user.name, email: user.email, isGuest: true } });
   } catch (error) {
     console.error("Guest login error:", error);
     return res.status(500).json({ error: "Internal server error" });

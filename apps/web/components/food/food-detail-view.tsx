@@ -7,15 +7,19 @@ import {
   CalendarDays,
   Clock3,
   Info,
+  LoaderCircle,
   MapPin,
   NotebookText,
   PackageOpen,
   Tags,
+  Trash2,
 } from "lucide-react";
 import Link from "next/link";
-import { Suspense } from "react";
+import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
 import type { ComponentType, ReactNode } from "react";
 import { motion } from "motion/react";
+import { toast } from "sonner";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import type { FoodStatus } from "@repo/types";
 import {
@@ -24,9 +28,21 @@ import {
   LoadingState,
   SectionCard,
 } from "@/components/foundation";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useInventoryDetail } from "@/hooks/queries/use-inventory-detail";
+import { useDeleteInventoryItem } from "@/hooks/mutations/use-delete-inventory-item";
 import type { FoodItemViewModel } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 
@@ -72,8 +88,11 @@ export function FoodDetailView({ foodId }: { foodId: string }) {
 
 function FoodDetailContent({ foodId }: { foodId: string }) {
   const reduceMotion = useReducedMotion();
+  const router = useRouter();
   const { data } = useInventoryDetail(foodId);
   const { item: food, usingMockFallback } = data;
+  const deleteMutation = useDeleteInventoryItem();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   if (!food) {
     return (
@@ -102,10 +121,10 @@ function FoodDetailContent({ foodId }: { foodId: string }) {
       {usingMockFallback ? (
         <Alert className="border-amber-200 bg-amber-50 text-amber-950">
           <AlertCircle aria-hidden={true} className="size-4" />
-          <AlertTitle>Dữ liệu đang dùng bản dự phòng</AlertTitle>
+          <AlertTitle>Đang dùng dữ liệu mẫu</AlertTitle>
           <AlertDescription className="text-amber-900">
-            API thật chưa phản hồi, nên trang đang hiển thị dữ liệu từ mock
-            adapter.
+            Đang hiển thị dữ liệu mẫu. Kết nối mạng để cập nhật thông tin mới
+            nhất.
           </AlertDescription>
         </Alert>
       ) : null}
@@ -182,7 +201,7 @@ function FoodDetailContent({ foodId }: { foodId: string }) {
         </SectionCard>
 
         <SectionCard
-          description="Phần này giải thích nguồn hoặc rule đang tạo ra trạng thái hiện tại."
+          description="Phần này giải thích vì sao Bếp An Tâm đưa ra khuyến nghị hiện tại."
           eyebrow="Nguồn trạng thái"
           title="Vì sao có trạng thái này?"
         >
@@ -217,7 +236,58 @@ function FoodDetailContent({ foodId }: { foodId: string }) {
         </AlertDescription>
       </Alert>
 
-      <BackToDashboard />
+      {/* ─── Action bar ───────────────────────────────────────── */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <BackToDashboard />
+
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogTrigger asChild>
+            <Button
+              className="h-11 justify-center rounded-2xl border-rose-200 text-rose-600 hover:bg-rose-50 hover:text-rose-700 sm:w-fit"
+              variant="outline"
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? (
+                <LoaderCircle aria-hidden className="size-4 animate-spin" />
+              ) : (
+                <Trash2 aria-hidden className="size-4" />
+              )}
+              {deleteMutation.isPending ? "Đang xóa..." : "Đã dùng xong"}
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent className="rounded-3xl">
+            <AlertDialogHeader>
+              <AlertDialogTitle>Xác nhận xóa thực phẩm</AlertDialogTitle>
+              <AlertDialogDescription>
+                Bạn có chắc muốn xóa <strong>{food.displayName}</strong> khỏi
+                tủ lạnh số? Hành động này không thể hoàn tác.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="rounded-2xl">Hủy</AlertDialogCancel>
+              <AlertDialogAction
+                className="rounded-2xl bg-rose-600 text-white hover:bg-rose-700"
+                onClick={async () => {
+                  try {
+                    await deleteMutation.mutateAsync(foodId);
+                    toast.success(
+                      `Đã xóa "${food.displayName}" khỏi tủ lạnh`,
+                      { description: "Danh sách đã được cập nhật." },
+                    );
+                    router.push("/#digital-fridge");
+                  } catch {
+                    toast.error("Không thể xóa thực phẩm", {
+                      description: "Vui lòng thử lại sau.",
+                    });
+                  }
+                }}
+              >
+                Xóa thực phẩm
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
     </DetailShell>
   );
 }
@@ -265,7 +335,7 @@ function BackToDashboard({ className }: { className?: string }) {
     >
       <Link href="/#digital-fridge">
         <ArrowLeft aria-hidden={true} className="size-4" />
-        Quay lại dashboard
+        Quay lại tủ lạnh
       </Link>
     </Button>
   );

@@ -54,9 +54,11 @@ export function EmptyState({
   title = "Chưa có thực phẩm nào",
   description = "Khi bạn thêm thực phẩm, danh sách sẽ hiển thị ở đây.",
   className,
-}: BasicStateProps) {
+  children,
+}: BasicStateProps & { children?: ReactNode }) {
   return (
     <StateShell
+      action={children}
       className={className}
       description={description}
       icon={<Inbox aria-hidden="true" className="size-5" />}
@@ -87,7 +89,7 @@ export function LoadingState({
 
 export function ErrorState({
   title = "Chưa tải được dữ liệu",
-  description = "Bạn có thể thử tải lại. Nếu backend chưa chạy, giao diện có thể dùng dữ liệu mẫu đã tách riêng.",
+  description = "Đã xảy ra lỗi khi tải dữ liệu. Bạn có thể thử tải lại.",
   onRetry,
   retryLabel = "Tải lại",
   className,

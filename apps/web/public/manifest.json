@@ -1,0 +1,26 @@
+{
+  "name": "Bếp An Tâm — Tủ lạnh số cho gia đình",
+  "short_name": "Bếp An Tâm",
+  "description": "Theo dõi thực phẩm đã mở nắp, nhắc hạn dùng và giảm lãng phí trong gia đình.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#16a34a",
+  "orientation": "portrait-primary",
+  "lang": "vi",
+  "categories": ["food", "lifestyle", "utilities"],
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

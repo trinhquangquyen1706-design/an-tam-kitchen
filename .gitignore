@@ -24,3 +24,11 @@ pnpm-debug.log*
 
 data
 packages/database/src/generated
+
+# Playwright / Demo video artifacts
+demo-video-output/
+demo-report/
+test-results/
+*.webm
+bki-demo-v2-final.png
+bki-ultimate-final.png

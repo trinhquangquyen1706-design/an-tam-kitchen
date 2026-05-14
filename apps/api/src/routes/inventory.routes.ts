@@ -26,12 +26,31 @@ router.post(
 );
 
 /**
+ * POST /inventory/scan-receipt
+ * Quét QR hóa đơn siêu thị → trả về danh sách thực phẩm mock.
+ */
+router.post(
+  '/scan-receipt',
+  inventoryController.scanReceipt
+);
+
+/**
  * GET /inventory
  * Lấy danh sách vật phẩm trong kho của người dùng hiện tại.
  */
 router.get(
   '/',
   inventoryController.getAll
+);
+
+/**
+ * GET /inventory/:id
+ * Lấy chi tiết một vật phẩm theo ID.
+ */
+router.get(
+  '/:id',
+  validateParams(InventoryItemIdParamSchema),
+  inventoryController.getById
 );
 
 /**

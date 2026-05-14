@@ -84,12 +84,14 @@ export function AppHeader({ className }: AppHeaderProps) {
               <Button
                 aria-label="Đăng xuất"
                 onClick={handleLogout}
-                size="icon-sm"
+                size="sm"
                 title="Đăng xuất"
                 type="button"
                 variant="outline"
+                className="h-10 gap-2 rounded-lg px-3"
               >
                 <LogOut aria-hidden={true} className="size-4" />
+                <span className="hidden sm:inline">Đăng xuất</span>
               </Button>
             </>
           ) : (

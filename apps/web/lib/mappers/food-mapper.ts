@@ -137,7 +137,7 @@ export function mapFoodApiRecordToViewModel(
     statusSourceLabel:
       statusSource === "backend"
         ? "Trạng thái từ dữ liệu backend"
-        : "Trạng thái từ rule tạm thời",
+        : "Trạng thái ước tính từ thông tin bảo quản",
     statusExplanation: getStatusExplanation({
       statusSource,
       openedAt,
@@ -241,20 +241,20 @@ function getStatusExplanation({
   daysAfterOpen?: number;
 }) {
   if (statusSource === "backend") {
-    return "Backend đã trả về trạng thái cho sản phẩm này. Giao diện chỉ hiển thị lại trạng thái đó.";
+    return "Hệ thống đã xác định trạng thái cho sản phẩm này dựa trên dữ liệu đã lưu.";
   }
 
   const ruleParts = [
-    "Backend chưa trả về trạng thái riêng, nên Bếp An Tâm đang dùng rule tạm thời từ service layer.",
+    "Trạng thái được ước tính dựa trên thông tin bảo quản và ngày mở nắp.",
   ];
 
   if (openedAt) {
-    ruleParts.push("Rule tham chiếu ngày mở nắp và số ngày đã mở.");
+    ruleParts.push("Tính toán dựa trên ngày mở nắp và số ngày đã mở.");
   }
 
   if (daysAfterOpen !== undefined) {
     ruleParts.push(
-      `Mốc sau mở nắp hiện dùng để tham chiếu là ${daysAfterOpen} ngày.`
+      `Thời gian khuyến nghị sử dụng sau khi mở nắp: ${daysAfterOpen} ngày.`
     );
   }
 
@@ -266,7 +266,7 @@ function getStatusExplanation({
     );
   } else {
     ruleParts.push(
-      "Hạn sử dụng trên bao bì chưa được ghi nhận, nên phần giải thích đang dựa nhiều hơn vào mốc sau mở nắp."
+      "Chưa có thông tin hạn sử dụng trên bao bì, trạng thái được ước tính chủ yếu từ thời gian đã mở nắp."
     );
   }
 

@@ -167,7 +167,7 @@ export default function SignupPage() {
                   </div>
                 ) : null}
 
-                <Button className="h-9 w-full" disabled={isLoading} type="submit">
+                <Button className="h-11 w-full" disabled={isLoading} type="submit">
                   {isLoading ? (
                     <>
                       <Loader2 className="size-4 animate-spin" />

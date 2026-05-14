@@ -23,6 +23,7 @@ import { isAuthError, getAuthErrorMessage } from "@/lib/api/client";
 import type { AddFoodCategory, AddFoodStorageLocation } from "@/lib/api/types";
 import { clearAuthHint, getAuthRequiredHref } from "@/lib/auth-session";
 import { useAddInventoryItem } from "@/hooks/mutations/use-add-inventory-item";
+import { toast } from "sonner";
 
 import {
   CATEGORY_OPTIONS,
@@ -101,6 +102,9 @@ export function AddFoodForm() {
       });
 
       // Navigate back — cache is already optimistically updated
+      toast.success(`Đã thêm "${values.name}" vào tủ lạnh`, {
+        description: "Danh sách đã được cập nhật.",
+      });
       router.push("/#digital-fridge");
     } catch (error) {
       if (isAuthError(error)) {
@@ -302,7 +306,7 @@ export function AddFoodForm() {
         >
           <Link href="/#digital-fridge">
             <ArrowLeft aria-hidden={true} className="size-4" />
-            Quay lại dashboard
+            Quay lại tủ lạnh
           </Link>
         </Button>
 

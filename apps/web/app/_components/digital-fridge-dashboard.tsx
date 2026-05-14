@@ -2,14 +2,15 @@
 
 import { differenceInCalendarDays, format } from "date-fns";
 import {
-  AlertCircle,
   ArrowRight,
   CalendarDays,
   Clock3,
   ClipboardCheck,
   Lock,
   MapPin,
+  NotebookText,
   Plus,
+  QrCode,
   Refrigerator,
   SearchCheck,
   Sparkles,
@@ -129,18 +130,25 @@ function DashboardContent() {
             Theo dõi thực phẩm đã mở nắp và biết món nào nên dùng trước.
           </p>
         </div>
-        <Button asChild className="h-12 rounded-2xl px-5 text-base">
-          <Link href={addFoodHref}>
-            <Plus aria-hidden={true} className="size-4" />
-            Thêm thực phẩm
-          </Link>
-        </Button>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Button asChild className="h-12 rounded-2xl px-5 text-base" variant="outline">
+            <Link href={addFoodHref.replace('/foods/new', '/foods/scan')}>
+              <QrCode aria-hidden={true} className="size-4" />
+              Quét hóa đơn
+            </Link>
+          </Button>
+          <Button asChild className="h-12 rounded-2xl px-5 text-base">
+            <Link href={addFoodHref}>
+              <Plus aria-hidden={true} className="size-4" />
+              Thêm thực phẩm
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {usingMockFallback ? (
         <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-950">
-          Backend chưa có endpoint inventory, dashboard đang dùng mock adapter
-          tách riêng từ service layer.
+          Đang hiển thị dữ liệu mẫu. Kết nối internet để đồng bộ dữ liệu mới nhất.
         </div>
       ) : null}
 
@@ -201,7 +209,14 @@ function DashboardContent() {
             <EmptyState
               description="Khi bạn thêm thực phẩm, các món sẽ xuất hiện trong tủ lạnh số."
               title="Tủ lạnh số đang trống"
-            />
+            >
+              <Button asChild className="mt-4 h-11 rounded-2xl px-5">
+                <Link href={addFoodHref}>
+                  <Plus aria-hidden={true} className="size-4" />
+                  Thêm thực phẩm đầu tiên
+                </Link>
+              </Button>
+            </EmptyState>
           ) : visibleFoods.length === 0 ? (
             <EmptyState
               description="Không có món nào trong bộ lọc hiện tại."
@@ -331,7 +346,7 @@ function FoodCard({
               value={food.locationLabel}
             />
             <InfoLine
-              icon={AlertCircle}
+              icon={NotebookText}
               label="Ghi chú"
               value={food.notes ?? "Chưa có ghi chú"}
             />

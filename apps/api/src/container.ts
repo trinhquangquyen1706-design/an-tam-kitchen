@@ -6,6 +6,7 @@ import {
   MockProductRepository,
   MockInventoryRepository,
   MockUserRepository,
+  MockUserProductRepository,
   IProductRepository,
   IInventoryRepository,
   IUserRepository,
@@ -32,7 +33,9 @@ export const userRepository: IUserRepository = useMock
   ? new MockUserRepository()
   : new PrismaUserRepository(prisma);
 
-export const userProductRepository: IUserProductRepository = new PrismaUserProductRepository(prisma);
+export const userProductRepository: IUserProductRepository = useMock
+  ? new MockUserProductRepository()
+  : new PrismaUserProductRepository(prisma);
 
 // ─── Controllers ─────────────────────────────────────────────────────────────
 // Lưu ý: Chúng ta inject repository vào controller tại đây.

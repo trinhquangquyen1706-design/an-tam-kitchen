@@ -1,6 +1,6 @@
 import { Product, InventoryItem, User } from '@repo/types';
 import { mockDatabase } from '@repo/database';
-import { IProductRepository, IInventoryRepository, IUserRepository } from './interfaces.js';
+import { IProductRepository, IInventoryRepository, IUserRepository, IUserProductRepository } from './interfaces.js';
 
 /**
  * Mock Product Repository
@@ -145,3 +145,46 @@ export class MockUserRepository implements IUserRepository {
 }
 
 export const userRepository = new MockUserRepository();
+
+/**
+ * Mock User Product Repository
+ */
+export class MockUserProductRepository implements IUserProductRepository {
+  private userProducts: any[] = [];
+
+  async create(data: {
+    userId: string;
+    name: string;
+    category: string;
+    storageLocation: string;
+    note?: string;
+  }): Promise<any> {
+    const newProduct = {
+      ...data,
+      id: crypto.randomUUID(),
+      company: 'Unknown',
+      barcode: null,
+      imageUrl: null,
+      daysBeforeOpen: 30,
+      daysAfterOpen: 7,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.userProducts.push(newProduct);
+    return newProduct;
+  }
+
+  async findAllByUserId(userId: string): Promise<any[]> {
+    return this.userProducts.filter(p => p.userId === userId);
+  }
+
+  async findById(id: string): Promise<any | null> {
+    return this.userProducts.find(p => p.id === id) || null;
+  }
+
+  async delete(id: string): Promise<boolean> {
+    const initialLength = this.userProducts.length;
+    this.userProducts = this.userProducts.filter(p => p.id !== id);
+    return this.userProducts.length < initialLength;
+  }
+}

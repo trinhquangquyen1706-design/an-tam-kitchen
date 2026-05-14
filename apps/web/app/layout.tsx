@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "sonner";
 import { AppQueryClientProvider } from "@/lib/react-query/query-client-provider";
 import "./globals.css";
 
@@ -17,6 +18,20 @@ export const metadata: Metadata = {
   title: "Bếp An Tâm | Tủ lạnh số cho gia đình",
   description:
     "Bếp An Tâm giúp theo dõi thực phẩm đã mở nắp, nhắc hạn dùng và giảm lãng phí trong gia đình.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Bếp An Tâm",
+  },
+  icons: {
+    icon: "/icons/icon-192x192.png",
+    apple: "/icons/icon-192x192.png",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#16a34a",
 };
 
 export default function RootLayout({
@@ -31,6 +46,14 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col">
         <AppQueryClientProvider>{children}</AppQueryClientProvider>
+        <Toaster
+          position="bottom-center"
+          richColors
+          closeButton
+          toastOptions={{
+            style: { borderRadius: '16px' },
+          }}
+        />
       </body>
     </html>
   );

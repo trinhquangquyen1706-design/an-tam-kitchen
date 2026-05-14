@@ -24,11 +24,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { getUserFromAuthResponse, login } from "@/lib/api/auth";
+import { getUserFromAuthResponse, login, guestLogin } from "@/lib/api/auth";
 import { getSafeNextPath, setAuthHint } from "@/lib/auth-session";
 
-const GUEST_EMAIL = "guest@antam.local";
-const GUEST_PASSWORD = "Guest@123456";
+
 
 function subscribeToLocationSearch() {
   return () => {};
@@ -111,8 +110,27 @@ export default function LoginPage() {
     handleLogin(email, password);
   }
 
-  function handleGuestLogin() {
-    handleLogin(GUEST_EMAIL, GUEST_PASSWORD, true);
+  async function handleGuestLogin() {
+    setMessage("");
+    setError("");
+    setIsGuestLoading(true);
+
+    try {
+      const payload = await guestLogin();
+      setAuthHint(
+        getUserFromAuthResponse(payload) ?? {
+          name: "Tài khoản khách",
+        }
+      );
+      setMessage("Đăng nhập khách thành công!");
+      router.push(safeNext ?? "/");
+    } catch {
+      setError(
+        "Không thể tạo tài khoản khách. Vui lòng thử lại sau."
+      );
+    } finally {
+      setIsGuestLoading(false);
+    }
   }
 
   const anyLoading = isLoading || isGuestLoading;
@@ -212,7 +230,7 @@ export default function LoginPage() {
                   </div>
                 ) : null}
 
-                <Button className="h-9 w-full" disabled={anyLoading} type="submit">
+                <Button className="h-11 w-full" disabled={anyLoading} type="submit">
                   {isLoading ? (
                     <>
                       <Loader2 className="size-4 animate-spin" />
@@ -233,7 +251,7 @@ export default function LoginPage() {
               </div>
 
               <Button
-                className="h-9 w-full"
+                className="h-11 w-full"
                 disabled={anyLoading}
                 onClick={handleGuestLogin}
                 type="button"

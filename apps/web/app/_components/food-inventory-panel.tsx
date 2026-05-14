@@ -22,8 +22,7 @@ function FoodInventoryPanelContent() {
     <div className="rounded-lg border border-[#e7ecdf] bg-white p-5 text-[#1d271f]">
       {usingMockFallback ? (
         <div className="mb-4 rounded-md border border-[#dfe9d0] bg-[#f7faf2] px-4 py-3 text-sm text-[#526055]">
-          Dữ liệu hiện tại là mock fallback cho tới khi backend có endpoint
-          inventory.
+          Đang hiển thị dữ liệu mẫu. Kết nối internet để đồng bộ dữ liệu mới nhất.
         </div>
       ) : null}
 

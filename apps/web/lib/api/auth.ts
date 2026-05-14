@@ -52,6 +52,20 @@ export async function logout() {
   return res.ok;
 }
 
+export async function guestLogin() {
+  const res = await fetch(`${API_URL}/api/auth/guest`, {
+    method: "POST",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data.error || "Guest login failed");
+  }
+
+  return res.json();
+}
+
 export function getUserFromAuthResponse(payload: unknown): AuthApiUser | null {
   const candidate = readUserCandidate(payload);
   if (!candidate) return null;

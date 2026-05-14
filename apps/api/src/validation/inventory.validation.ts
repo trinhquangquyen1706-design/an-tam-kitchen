@@ -8,7 +8,7 @@ import { StorageLocationEnum, FoodStatusEnum } from '@repo/types';
  * Validates :id route param as UUID v7
  */
 export const InventoryItemIdParamSchema = z.object({
-  id: z.uuidv7({ message: 'ID vật phẩm phải là UUID v7 hợp lệ' }),
+  id: z.uuid({ message: 'ID vật phẩm phải là UUID hợp lệ' }),
 });
 
 // ─── Body Schemas ─────────────────────────────────────────────────────────────
@@ -27,7 +27,8 @@ export const CreateInventoryItemBodySchema = z.object({
   displayName: z.string().optional(),
   openedAt: z.coerce.date().nullable().optional(),
   expiryDate: z.coerce.date().optional(),
-  location: StorageLocationEnum.default('fridge'),
+  location: StorageLocationEnum.optional(),
+  storageLocation: z.string().optional(), // Frontend gửi field này thay vì location
   status: FoodStatusEnum.default('fresh'),
   notes: z.string().optional(),
   quantity: z.string().optional(),
