@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { users, products, inventory } from "../../_lib/store";
+import { users, products, inventory } from "@/lib/api-server/store";
 import {
   hashPassword,
   verifyPassword,
@@ -7,7 +7,7 @@ import {
   setAuthCookie,
   clearAuthCookie,
   getCurrentUserId,
-} from "../../_lib/auth";
+} from "@/lib/api-server/auth";
 
 // ─── POST /api/auth/signup ──────────────────────────────────────────────────
 async function handleSignup(body: Record<string, unknown>) {

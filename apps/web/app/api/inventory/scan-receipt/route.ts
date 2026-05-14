@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUserId } from "../../../_lib/auth";
+import { getCurrentUserId } from "@/lib/api-server/auth";
 
 // ─── POST /api/inventory/scan-receipt ───────────────────────────────────────
 export async function POST(request: NextRequest) {

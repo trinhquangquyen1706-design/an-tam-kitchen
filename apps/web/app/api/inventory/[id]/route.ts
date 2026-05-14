@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { inventory, products } from "../../../_lib/store";
-import { getCurrentUserId } from "../../../_lib/auth";
+import { inventory, products } from "@/lib/api-server/store";
+import { getCurrentUserId } from "@/lib/api-server/auth";
 
 function enrichWithProduct(item: (typeof inventory)[0]) {
   const product = products.find((p) => p.id === item.userProductId);
