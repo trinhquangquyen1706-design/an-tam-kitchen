@@ -1,7 +1,17 @@
 import { cookies } from "next/headers";
-import { type User, users } from "./store";
+import { NextResponse } from "next/server";
 
 const JWT_SECRET = "antam-bki-2026-secret";
+
+// ── Cookie config ──
+const COOKIE_NAME = "accessToken";
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: true,
+  sameSite: "lax" as const,
+  maxAge: 2 * 60 * 60, // 2 hours in seconds
+  path: "/",
+};
 
 // Simple JWT-like token (no external dependency needed)
 function createToken(payload: Record<string, unknown>, expiresInMs: number): string {
@@ -27,28 +37,33 @@ export function createAccessToken(userId: string, isGuest = false): string {
   return createToken({ userId, isGuest }, 2 * 60 * 60 * 1000); // 2 hours
 }
 
+/**
+ * Read userId from the request cookies.
+ * Works in Route Handlers via next/headers cookies().
+ */
 export async function getCurrentUserId(): Promise<string | null> {
   const cookieStore = await cookies();
-  const token = cookieStore.get("accessToken")?.value;
+  const token = cookieStore.get(COOKIE_NAME)?.value;
   if (!token) return null;
   const payload = verifyToken(token);
   return (payload?.userId as string) || null;
 }
 
-export async function setAuthCookie(token: string) {
-  const cookieStore = await cookies();
-  cookieStore.set("accessToken", token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    maxAge: 2 * 60 * 60, // 2 hours in seconds
-    path: "/",
-  });
+/**
+ * Set auth cookie ON the NextResponse object.
+ * This is the correct way in Route Handlers (not via cookies() API).
+ */
+export function setAuthCookieOnResponse(response: NextResponse, token: string): NextResponse {
+  response.cookies.set(COOKIE_NAME, token, COOKIE_OPTIONS);
+  return response;
 }
 
-export async function clearAuthCookie() {
-  const cookieStore = await cookies();
-  cookieStore.delete("accessToken");
+/**
+ * Clear auth cookie ON the NextResponse object.
+ */
+export function clearAuthCookieOnResponse(response: NextResponse): NextResponse {
+  response.cookies.set(COOKIE_NAME, "", { ...COOKIE_OPTIONS, maxAge: 0 });
+  return response;
 }
 
 // Simple password hashing (demo only — NOT production-grade)

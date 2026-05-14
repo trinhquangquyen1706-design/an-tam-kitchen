@@ -4,8 +4,8 @@ import {
   hashPassword,
   verifyPassword,
   createAccessToken,
-  setAuthCookie,
-  clearAuthCookie,
+  setAuthCookieOnResponse,
+  clearAuthCookieOnResponse,
   getCurrentUserId,
 } from "@/lib/api-server/auth";
 
@@ -37,13 +37,13 @@ async function handleSignup(body: Record<string, unknown>) {
   users.push(newUser);
 
   const token = createAccessToken(newUser.id);
-  await setAuthCookie(token);
-
-  return NextResponse.json({
+  const response = NextResponse.json({
     message: "User created successfully",
     userId: newUser.id,
     user: { id: newUser.id, name: newUser.name, email: newUser.email },
   }, { status: 201 });
+
+  return setAuthCookieOnResponse(response, token);
 }
 
 // ─── POST /api/auth/login ───────────────────────────────────────────────────
@@ -60,12 +60,12 @@ async function handleLogin(body: Record<string, unknown>) {
   }
 
   const token = createAccessToken(user.id);
-  await setAuthCookie(token);
-
-  return NextResponse.json({
+  const response = NextResponse.json({
     message: "Login successful",
     user: { id: user.id, name: user.name, email: user.email },
   });
+
+  return setAuthCookieOnResponse(response, token);
 }
 
 // ─── POST /api/auth/guest ───────────────────────────────────────────────────
@@ -118,18 +118,18 @@ async function handleGuestLogin() {
   });
 
   const token = createAccessToken(user.id, true);
-  await setAuthCookie(token);
-
-  return NextResponse.json({
+  const response = NextResponse.json({
     message: "Đăng nhập với tư cách khách thành công",
     user: { id: user.id, name: user.name, email: user.email, isGuest: true },
   });
+
+  return setAuthCookieOnResponse(response, token);
 }
 
 // ─── POST /api/auth/logout ──────────────────────────────────────────────────
 async function handleLogout() {
-  await clearAuthCookie();
-  return NextResponse.json({ message: "Logged out successfully" });
+  const response = NextResponse.json({ message: "Logged out successfully" });
+  return clearAuthCookieOnResponse(response);
 }
 
 // ─── GET /api/auth/me ───────────────────────────────────────────────────────
