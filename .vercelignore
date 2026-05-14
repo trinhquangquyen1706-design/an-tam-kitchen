@@ -1,0 +1,16 @@
+node_modules
+.next
+.turbo
+dist
+build
+out
+data
+demo-video-output
+demo-report
+test-results
+*.webm
+*.mp4
+*.png
+!apps/web/public/**/*.png
+apps/api
+packages/database/src/generated
