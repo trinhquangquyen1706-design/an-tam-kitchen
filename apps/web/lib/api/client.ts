@@ -24,9 +24,14 @@ const AUTH_ERROR_PATTERNS = [
 const DEFAULT_API_BASE_URL = "http://localhost:3001";
 
 function getApiBaseUrl() {
-  return (
-    process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? DEFAULT_API_BASE_URL
-  );
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, "");
+  }
+  // On Vercel (or any non-localhost), use same-origin (empty string = relative URL)
+  if (typeof window !== "undefined" && !window.location.hostname.includes("localhost")) {
+    return "";
+  }
+  return DEFAULT_API_BASE_URL;
 }
 
 function buildApiUrl(path: string) {

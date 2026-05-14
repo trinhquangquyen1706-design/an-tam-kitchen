@@ -3,7 +3,11 @@
  */
 
 // Lấy base URL từ môi trường hoặc mặc định localhost
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+function getAuthApiUrl() {
+  if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
+  if (typeof window !== "undefined" && !window.location.hostname.includes("localhost")) return "";
+  return "http://localhost:3001";
+}
 
 export type AuthApiUser = {
   id?: string;
@@ -12,7 +16,7 @@ export type AuthApiUser = {
 };
 
 export async function signup(name: string, email: string, password: string) {
-  const res = await fetch(`${API_URL}/api/auth/signup`, {
+  const res = await fetch(`${getAuthApiUrl()}/api/auth/signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -28,7 +32,7 @@ export async function signup(name: string, email: string, password: string) {
 }
 
 export async function login(email: string, password: string) {
-  const res = await fetch(`${API_URL}/api/auth/login`, {
+  const res = await fetch(`${getAuthApiUrl()}/api/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -45,7 +49,7 @@ export async function login(email: string, password: string) {
 }
 
 export async function logout() {
-  const res = await fetch(`${API_URL}/api/auth/logout`, {
+  const res = await fetch(`${getAuthApiUrl()}/api/auth/logout`, {
     method: "POST",
     credentials: "include",
   });
@@ -53,7 +57,7 @@ export async function logout() {
 }
 
 export async function guestLogin() {
-  const res = await fetch(`${API_URL}/api/auth/guest`, {
+  const res = await fetch(`${getAuthApiUrl()}/api/auth/guest`, {
     method: "POST",
     credentials: "include",
   });
