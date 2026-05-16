@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { AppQueryClientProvider } from "@/lib/react-query/query-client-provider";
+import { ThemeProvider } from "@/components/foundation/theme-provider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -43,9 +44,13 @@ export default function RootLayout({
     <html
       lang="vi"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col">
-        <AppQueryClientProvider>{children}</AppQueryClientProvider>
+        <ThemeProvider>
+          <AppQueryClientProvider>{children}</AppQueryClientProvider>
+        </ThemeProvider>
+
         <Toaster
           position="bottom-center"
           richColors

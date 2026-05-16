@@ -1,18 +1,18 @@
 "use client";
 
-import { differenceInCalendarDays, format } from "date-fns";
+import { differenceInCalendarDays, differenceInHours, format } from "date-fns";
 import {
   ArrowRight,
   CalendarDays,
   Clock3,
   ClipboardCheck,
-  Lock,
   MapPin,
   NotebookText,
   Plus,
   QrCode,
   Refrigerator,
   SearchCheck,
+  ShoppingCart,
   Sparkles,
 } from "lucide-react";
 import { motion } from "motion/react";
@@ -23,7 +23,6 @@ import type { FoodStatus } from "@repo/types";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import {
   EmptyState,
-  ErrorState,
   FoodStatusBadge,
   getFoodStatusLabel,
   LoadingState,
@@ -37,8 +36,11 @@ import { getAuthRequiredHref, useAuthHint } from "@/lib/auth-session";
 import {
   useDashboardUIStore,
   matchesDashboardFilter,
+  matchesLocationFilter,
   DASHBOARD_FILTER_OPTIONS,
+  LOCATION_FILTER_OPTIONS,
   type DashboardFilterValue,
+  type LocationFilterValue,
 } from "@/lib/stores/dashboard-ui-store";
 import { cn } from "@/lib/utils";
 
@@ -82,10 +84,13 @@ function DashboardContent() {
   // Pillar 4: Zustand for UI state only
   const filter = useDashboardUIStore((s) => s.filter);
   const setFilter = useDashboardUIStore((s) => s.setFilter);
+  const locationFilter = useDashboardUIStore((s) => s.locationFilter);
+  const setLocationFilter = useDashboardUIStore((s) => s.setLocationFilter);
 
   const reduceMotion = useReducedMotion();
   const hasAuth = useAuthHint();
   const addFoodHref = getProtectedHref("/foods/new", hasAuth);
+  const scanHref = getProtectedHref("/foods/scan", hasAuth);
 
   const sortedFoods = useMemo(() => {
     return [...foods].sort((a, b) => {
@@ -96,48 +101,45 @@ function DashboardContent() {
   }, [foods]);
 
   const visibleFoods = useMemo(() => {
-    return sortedFoods.filter((food) =>
-      matchesDashboardFilter(food.status, filter)
+    return sortedFoods.filter(
+      (food) =>
+        matchesDashboardFilter(food.status, filter) &&
+        matchesLocationFilter(food.location, locationFilter)
     );
-  }, [filter, sortedFoods]);
+  }, [filter, locationFilter, sortedFoods]);
 
   const stats = useMemo(() => {
     return {
       total: foods.length,
       useSoon: foods.filter((food) => food.status === "use_soon").length,
-      check: foods.filter((food) => food.status === "check_before_use").length,
+      needBuy: 0, // placeholder for shopping list feature
       safe: foods.filter((food) => food.status === "fresh").length,
-      priority: foods.filter((food) => food.status !== "fresh").length,
     };
   }, [foods]);
 
-  const priorityFoods = useMemo(
-    () => sortedFoods.filter((food) => food.status !== "fresh"),
-    [sortedFoods]
-  );
-
   return (
     <DashboardShell>
+      {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="max-w-3xl">
           <p className="text-sm font-semibold uppercase tracking-[0.14em] text-primary">
             Dashboard
           </p>
-          <h2 className="mt-3 text-3xl font-semibold leading-tight tracking-normal sm:text-4xl">
-            Tủ lạnh số
+          <h2 className="mt-3 text-3xl font-bold leading-tight tracking-normal sm:text-4xl">
+            Tủ lạnh số của bạn
           </h2>
           <p className="mt-4 text-base leading-7 text-muted-foreground sm:text-lg">
             Theo dõi thực phẩm đã mở nắp và biết món nào nên dùng trước.
           </p>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Button asChild className="h-12 rounded-2xl px-5 text-base" variant="outline">
-            <Link href={addFoodHref.replace('/foods/new', '/foods/scan')}>
+          <Button asChild className="h-12 rounded-full px-5 text-base" variant="outline">
+            <Link href={scanHref}>
               <QrCode aria-hidden={true} className="size-4" />
               Quét hóa đơn
             </Link>
           </Button>
-          <Button asChild className="h-12 rounded-2xl px-5 text-base">
+          <Button asChild className="h-12 rounded-full px-5 text-base">
             <Link href={addFoodHref}>
               <Plus aria-hidden={true} className="size-4" />
               Thêm thực phẩm
@@ -152,6 +154,7 @@ function DashboardContent() {
         </div>
       ) : null}
 
+      {/* ═══ STAT CARDS ═══ */}
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           icon={Refrigerator}
@@ -165,20 +168,45 @@ function DashboardContent() {
           value={stats.useSoon}
         />
         <StatCard
-          icon={SearchCheck}
-          label="Cần kiểm tra kỹ"
+          icon={ShoppingCart}
+          label="Cần mua"
           tone="orange"
-          value={stats.check}
+          value={stats.needBuy}
         />
         <StatCard
           icon={ClipboardCheck}
-          label="Còn trong thời gian khuyến nghị"
+          label="Trong thời gian khuyến nghị"
           tone="emerald"
           value={stats.safe}
         />
       </div>
 
-      <div className="mt-8 grid gap-5 lg:grid-cols-[1fr_20rem]">
+      {/* ═══ LOCATION FILTER TABS ═══ */}
+      <div className="mt-8">
+        <Tabs
+          className="w-full"
+          onValueChange={(value: string) =>
+            setLocationFilter(value as LocationFilterValue)
+          }
+          value={locationFilter}
+        >
+          <TabsList className="h-auto w-full flex-wrap justify-start gap-2 rounded-full bg-muted/50 p-2 sm:w-auto">
+            {LOCATION_FILTER_OPTIONS.map((option) => (
+              <TabsTrigger
+                className="min-h-10 flex-none rounded-full px-4 text-sm font-medium"
+                key={option.value}
+                value={option.value}
+              >
+                <span className="mr-1.5">{option.emoji}</span>
+                {option.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+      </div>
+
+      {/* ═══ MAIN CONTENT ═══ */}
+      <div className="mt-6 grid gap-5 lg:grid-cols-[1fr_20rem]">
         <SectionCard
           action={
             <Tabs
@@ -210,7 +238,7 @@ function DashboardContent() {
               description="Khi bạn thêm thực phẩm, các món sẽ xuất hiện trong tủ lạnh số."
               title="Tủ lạnh số đang trống"
             >
-              <Button asChild className="mt-4 h-11 rounded-2xl px-5">
+              <Button asChild className="mt-4 h-11 rounded-full px-5">
                 <Link href={addFoodHref}>
                   <Plus aria-hidden={true} className="size-4" />
                   Thêm thực phẩm đầu tiên
@@ -238,10 +266,18 @@ function DashboardContent() {
         </SectionCard>
 
         <ReminderPreview
-          priorityCount={stats.priority}
-          priorityFood={priorityFoods[0]}
+          foods={foods}
         />
       </div>
+
+      {/* ═══ FLOATING ACTION BUTTON ═══ */}
+      <Link
+        href={addFoodHref}
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-primary px-5 py-3.5 font-semibold text-primary-foreground shadow-lg transition hover:shadow-xl hover:scale-105 active:scale-95"
+      >
+        <Plus aria-hidden={true} className="size-5" />
+        <span className="hidden sm:inline">Thêm thực phẩm nhanh</span>
+      </Link>
     </DashboardShell>
   );
 }
@@ -271,11 +307,11 @@ function StatCard({
   }[tone];
 
   return (
-    <div className="rounded-3xl border bg-background p-4 shadow-sm">
+    <div className="rounded-3xl border bg-background p-5 shadow-sm transition hover:shadow-md">
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="text-sm text-muted-foreground">{label}</p>
-          <p className="mt-2 text-3xl font-semibold tabular-nums">{value}</p>
+          <p className="mt-2 text-3xl font-bold tabular-nums">{value}</p>
         </div>
         <span
           className={cn(
@@ -286,6 +322,40 @@ function StatCard({
           <Icon aria-hidden={true} className="size-5" />
         </span>
       </div>
+    </div>
+  );
+}
+
+/**
+ * Compute freshness percentage (0-100) based on how much time remains.
+ */
+function getFreshnessPercent(food: FoodItemViewModel): number {
+  const now = new Date();
+  const opened = food.openedAt ?? food.createdAt ?? now;
+  const totalHours = differenceInHours(food.expiryDate, opened);
+  const elapsedHours = differenceInHours(now, opened);
+
+  if (totalHours <= 0) return 0;
+  const remaining = Math.max(0, 1 - elapsedHours / totalHours);
+  return Math.round(remaining * 100);
+}
+
+function FreshnessBar({ percent }: { percent: number }) {
+  const color =
+    percent > 70
+      ? "bg-emerald-500"
+      : percent > 30
+        ? "bg-amber-500"
+        : "bg-red-500";
+
+  return (
+    <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-muted">
+      <motion.div
+        className={cn("h-full rounded-full", color)}
+        initial={{ width: 0 }}
+        animate={{ width: `${percent}%` }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      />
     </div>
   );
 }
@@ -309,11 +379,12 @@ function FoodCard({
     : null;
   const detailPath = `/foods/${food.id}`;
   const detailHref = getProtectedHref(detailPath, hasAuth);
+  const freshnessPercent = getFreshnessPercent(food);
 
   return (
     <motion.article
       animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-      className="rounded-3xl border bg-card p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+      className="rounded-3xl border bg-card p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
       initial={reduceMotion ? undefined : { opacity: 0, y: 10 }}
       transition={{
         delay: Math.min(index * 0.04, 0.16),
@@ -322,13 +393,20 @@ function FoodCard({
       }}
     >
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <h3 className="text-lg font-semibold leading-tight">
               {food.displayName}
             </h3>
             <FoodStatusBadge className="w-fit" status={food.status} />
           </div>
+
+          {/* Freshness progress bar */}
+          <FreshnessBar percent={freshnessPercent} />
+          <p className="mt-1 text-xs text-muted-foreground">
+            Độ tươi: {freshnessPercent}% thời gian còn lại
+          </p>
+
           <div className="mt-3 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
             <InfoLine
               icon={CalendarDays}
@@ -353,7 +431,7 @@ function FoodCard({
           </div>
         </div>
 
-        <Button asChild className="h-11 rounded-2xl lg:mt-0" variant="outline">
+        <Button asChild className="h-11 rounded-full lg:mt-0" variant="outline">
           <Link href={detailHref}>
             Xem chi tiết
             <ArrowRight aria-hidden={true} className="size-4" />
@@ -393,12 +471,15 @@ function InfoLine({
 }
 
 function ReminderPreview({
-  priorityCount,
-  priorityFood,
+  foods,
 }: {
-  priorityCount: number;
-  priorityFood?: FoodItemViewModel;
+  foods: FoodItemViewModel[];
 }) {
+  const priorityFoods = foods.filter((food) => food.status !== "fresh");
+  const priorityFood = priorityFoods.sort(
+    (a, b) => a.expiryDate.getTime() - b.expiryDate.getTime()
+  )[0];
+
   const priorityText = priorityFood
     ? `${priorityFood.displayName} — ${getFoodStatusLabel(priorityFood.status)}`
     : "Hiện chưa có món nào cần ưu tiên trong danh sách.";
@@ -423,8 +504,8 @@ function ReminderPreview({
         </div>
         <div className="rounded-2xl border bg-card p-4">
           <p className="text-sm font-medium">
-            {priorityCount > 0
-              ? `Bạn có ${priorityCount} món nên xem trước hôm nay`
+            {priorityFoods.length > 0
+              ? `Bạn có ${priorityFoods.length} món nên xem trước hôm nay`
               : "Các món còn lại đang ở trạng thái ít cần chú ý hơn"}
           </p>
         </div>

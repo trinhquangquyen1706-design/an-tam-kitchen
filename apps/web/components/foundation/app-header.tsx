@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { Leaf, LogOut, UserRound } from "lucide-react";
+import { Leaf, LogOut, Moon, Sun, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuthHint, clearAuthHint, useAuthUserHint } from "@/lib/auth-session";
 import { logout as apiLogout } from "@/lib/api/auth";
 import { useRouter } from "next/navigation";
+import { useTheme } from "@/components/foundation/theme-provider";
 
 type AppHeaderProps = {
   className?: string;
@@ -22,6 +23,7 @@ export function AppHeader({ className }: AppHeaderProps) {
   const hasAuth = useAuthHint();
   const userHint = useAuthUserHint();
   const router = useRouter();
+  const { resolved, toggle } = useTheme();
 
   const handleLogout = async () => {
     try {
@@ -74,9 +76,26 @@ export function AppHeader({ className }: AppHeaderProps) {
         </nav>
 
         <div className="flex items-center gap-2">
+          {/* Dark Mode Toggle */}
+          <Button
+            aria-label={resolved === "dark" ? "Chuyển sang chế độ sáng" : "Chuyển sang chế độ tối"}
+            className="size-10 rounded-full"
+            onClick={toggle}
+            size="icon"
+            title={resolved === "dark" ? "Chế độ sáng" : "Chế độ tối"}
+            type="button"
+            variant="ghost"
+          >
+            {resolved === "dark" ? (
+              <Sun aria-hidden={true} className="size-[1.15rem]" />
+            ) : (
+              <Moon aria-hidden={true} className="size-[1.15rem]" />
+            )}
+          </Button>
+
           {hasAuth ? (
             <>
-              <span className="inline-flex h-9 max-w-48 items-center gap-2 rounded-lg border bg-background px-3 text-sm text-foreground">
+              <span className="inline-flex h-9 max-w-48 items-center gap-2 rounded-full border bg-background px-3 text-sm text-foreground">
                 <UserRound aria-hidden={true} className="size-4 shrink-0 text-primary" />
                 <span className="hidden text-muted-foreground sm:inline">Xin chào,</span>
                 <span className="truncate font-medium">{displayName}</span>
@@ -88,7 +107,7 @@ export function AppHeader({ className }: AppHeaderProps) {
                 title="Đăng xuất"
                 type="button"
                 variant="outline"
-                className="h-10 gap-2 rounded-lg px-3"
+                className="h-10 gap-2 rounded-full px-3"
               >
                 <LogOut aria-hidden={true} className="size-4" />
                 <span className="hidden sm:inline">Đăng xuất</span>
@@ -96,10 +115,10 @@ export function AppHeader({ className }: AppHeaderProps) {
             </>
           ) : (
             <>
-              <Button asChild size="sm" variant="outline">
+              <Button asChild size="sm" variant="outline" className="rounded-full">
                 <Link href="/login">Đăng nhập</Link>
               </Button>
-              <Button asChild size="sm">
+              <Button asChild size="sm" className="rounded-full">
                 <Link href="/signup">Đăng ký</Link>
               </Button>
             </>

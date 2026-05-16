@@ -6,17 +6,16 @@ import {
   CalendarDays,
   ClipboardCheck,
   Lock,
-  MapPin,
   Plus,
-  Refrigerator,
   ScanLine,
   Sparkles,
 } from "lucide-react";
 import { motion } from "motion/react";
+import Image from "next/image";
 import Link from "next/link";
 import type { ComponentType } from "react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { AppHeader, FoodStatusBadge } from "@/components/foundation";
+import { AppHeader } from "@/components/foundation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -33,13 +32,6 @@ type Feature = {
   title: string;
   description: string;
   icon: ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
-};
-
-type FoodRow = {
-  name: string;
-  location: string;
-  note: string;
-  status: "safe" | "use_soon" | "check" | "avoid";
 };
 
 const features: Feature[] = [
@@ -81,27 +73,6 @@ const steps = [
   },
 ];
 
-const foodRows: FoodRow[] = [
-  {
-    name: "Sữa tươi",
-    location: "Ngăn mát",
-    note: "Mở 2 ngày trước",
-    status: "use_soon",
-  },
-  {
-    name: "Tương cà",
-    location: "Nhiệt độ phòng",
-    note: "Còn trong mốc tham chiếu",
-    status: "safe",
-  },
-  {
-    name: "Xúc xích",
-    location: "Ngăn mát",
-    note: "Nên kiểm tra trước khi dùng",
-    status: "check",
-  },
-];
-
 export function LandingPage() {
   const reduceMotion = useReducedMotion();
   const hasAuth = useAuthHint();
@@ -122,37 +93,36 @@ export function LandingPage() {
       <AppHeader />
 
       <main>
-        <section className="border-b bg-[linear-gradient(180deg,var(--background)_0%,var(--card)_100%)]">
-          <div className="mx-auto grid max-w-7xl gap-9 px-4 py-9 sm:px-6 sm:py-14 lg:grid-cols-[0.94fr_1.06fr] lg:items-center lg:px-8 lg:py-16">
-            <motion.div {...motionProps} className="max-w-3xl">
-              <p className="inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1 text-sm font-medium text-primary shadow-sm">
-                <Sparkles aria-hidden="true" className="size-4" />
-                Web demo tủ lạnh số cho gia đình
-              </p>
-
-              <h1 className="mt-5 text-3xl font-semibold leading-tight tracking-normal text-foreground sm:text-5xl lg:text-6xl">
-                Biết món nào nên dùng trước trong tủ lạnh của bạn
+        {/* ═══════════════════════════════════════════════════════════ */}
+        {/* HERO SECTION — Clean 2-column layout matching mockup      */}
+        {/* ═══════════════════════════════════════════════════════════ */}
+        <section className="overflow-hidden border-b bg-[linear-gradient(180deg,var(--background)_0%,var(--card)_100%)]">
+          <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-2 lg:items-center lg:gap-12 lg:px-8 lg:py-20">
+            {/* Left: Text content */}
+            <motion.div {...motionProps} className="max-w-xl">
+              <h1 className="text-4xl font-bold leading-[1.12] tracking-tight text-foreground sm:text-5xl lg:text-[3.5rem]">
+                <span className="italic">Biết món nào nên{" "}</span>
+                <span className="italic">dùng trước</span>{" "}
+                <span className="text-foreground/80">trong tủ lạnh của bạn</span>
               </h1>
 
-              <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground sm:text-xl sm:leading-8">
-                Bếp An Tâm giúp theo dõi thực phẩm đã mở nắp, nhắc hạn dùng và
-                giảm lãng phí trong gia đình mà vẫn để người dùng tự kiểm tra
-                thực phẩm trước khi sử dụng.
+              <p className="mt-6 text-lg leading-8 text-muted-foreground">
+                Bếp An Tâm giúp theo dõi thực phẩm, giảm lãng phí và tiết kiệm tiền.
               </p>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Button
                   asChild
-                  className="h-12 justify-center rounded-2xl px-5 text-base shadow-sm"
+                  className="h-12 justify-center rounded-full px-7 text-base font-semibold shadow-md hover:shadow-lg transition-shadow"
                 >
                   <a href="#digital-fridge">
                     Xem tủ lạnh số
-                    <ArrowRight aria-hidden="true" className="size-4" />
+                    <ArrowRight aria-hidden="true" className="ml-1 size-4" />
                   </a>
                 </Button>
                 <Button
                   asChild
-                  className="h-12 justify-center rounded-2xl px-5 text-base"
+                  className="h-12 justify-center rounded-full px-7 text-base font-medium"
                   variant="outline"
                 >
                   <Link href={addFoodHref}>
@@ -161,21 +131,9 @@ export function LandingPage() {
                   </Link>
                 </Button>
               </div>
-
-              <div className="mt-7 grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
-                {["Ngày mở nắp", "Vị trí bảo quản", "Khuyến nghị tham khảo"].map(
-                  (item) => (
-                    <div
-                      className="rounded-2xl border bg-card px-4 py-3 shadow-sm"
-                      key={item}
-                    >
-                      {item}
-                    </div>
-                  )
-                )}
-              </div>
             </motion.div>
 
+            {/* Right: Fridge illustration with floating badges */}
             <motion.div
               {...motionProps}
               transition={
@@ -187,14 +145,53 @@ export function LandingPage() {
                       ease: [0.22, 1, 0.36, 1] as const,
                     }
               }
+              className="relative"
             >
-              {hasAuth ? <DashboardMockup /> : <LockedHeroPreview />}
+              <div className="relative mx-auto max-w-lg lg:max-w-none">
+                {/* Fridge image */}
+                <div className="relative overflow-hidden rounded-3xl border bg-card shadow-[0_20px_60px_rgba(15,75,54,0.12)]">
+                  <Image
+                    alt="Tủ lạnh thông minh An Tâm Kitchen"
+                    className="w-full object-cover"
+                    height={480}
+                    priority
+                    src="/hero-fridge.png"
+                    width={640}
+                  />
+
+                  {/* Floating status badges */}
+                  <div className="absolute left-4 top-4 flex items-center gap-1.5 rounded-full bg-emerald-500/90 px-3 py-1.5 text-xs font-semibold text-white shadow-lg backdrop-blur-sm">
+                    <span className="size-2 rounded-full bg-white" />
+                    Tươi mới
+                  </div>
+
+                  <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-amber-500/90 px-3 py-1.5 text-xs font-semibold text-white shadow-lg backdrop-blur-sm">
+                    <span className="size-2 rounded-full bg-white" />
+                    Nên dùng sớm
+                  </div>
+
+                  <div className="absolute bottom-4 right-4 flex items-center gap-1.5 rounded-full bg-red-500/90 px-3 py-1.5 text-xs font-semibold text-white shadow-lg backdrop-blur-sm">
+                    <span className="size-2 rounded-full bg-white" />
+                    Cần mua/Hết hạn
+                  </div>
+
+                  <div className="absolute bottom-4 left-4 flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-foreground shadow-lg backdrop-blur-sm">
+                    2 món
+                  </div>
+                </div>
+              </div>
             </motion.div>
           </div>
         </section>
 
+        {/* ═══════════════════════════════════════════════════════════ */}
+        {/* DIGITAL FRIDGE DASHBOARD                                   */}
+        {/* ═══════════════════════════════════════════════════════════ */}
         {hasAuth ? <DigitalFridgeDashboard /> : <LockedDigitalFridgePrompt />}
 
+        {/* ═══════════════════════════════════════════════════════════ */}
+        {/* FEATURES SECTION                                           */}
+        {/* ═══════════════════════════════════════════════════════════ */}
         <section className="scroll-mt-20 bg-card py-12 sm:py-16" id="features">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionIntro
@@ -225,6 +222,9 @@ export function LandingPage() {
           </div>
         </section>
 
+        {/* ═══════════════════════════════════════════════════════════ */}
+        {/* HOW IT WORKS — 3 Steps                                     */}
+        {/* ═══════════════════════════════════════════════════════════ */}
         <section className="scroll-mt-20 bg-background py-12 sm:py-16" id="add-food">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionIntro
@@ -276,6 +276,9 @@ export function LandingPage() {
           </div>
         </section>
 
+        {/* ═══════════════════════════════════════════════════════════ */}
+        {/* CTA FOOTER                                                 */}
+        {/* ═══════════════════════════════════════════════════════════ */}
         <section className="border-t bg-card py-12 sm:py-16">
           <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
             <p className="text-sm font-semibold uppercase tracking-[0.14em] text-primary">
@@ -289,12 +292,12 @@ export function LandingPage() {
               thông tin về ngày mở nắp, hạn dùng và vị trí bảo quản rõ ràng hơn.
             </p>
             <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-              <Button asChild className="h-12 rounded-2xl px-5 text-base">
+              <Button asChild className="h-12 rounded-full px-7 text-base">
                 <a href="#digital-fridge">Xem tủ lạnh số</a>
               </Button>
               <Button
                 asChild
-                className="h-12 rounded-2xl px-5 text-base"
+                className="h-12 rounded-full px-7 text-base"
                 variant="outline"
               >
                 <Link href={addFoodHref}>Thêm thực phẩm</Link>
@@ -331,19 +334,19 @@ function LockedDigitalFridgePrompt() {
           </CardHeader>
           <CardContent className="px-5 pb-8 sm:px-8 sm:pb-10">
             <div className="flex flex-col justify-center gap-3 sm:flex-row">
-              <Button asChild className="h-11 rounded-2xl px-5">
+              <Button asChild className="h-11 rounded-full px-5">
                 <Link href={loginHref}>Đăng nhập</Link>
               </Button>
               <Button
                 asChild
-                className="h-11 rounded-2xl px-5"
+                className="h-11 rounded-full px-5"
                 variant="outline"
               >
                 <Link href="/signup">Đăng ký</Link>
               </Button>
               <Button
                 asChild
-                className="h-11 rounded-2xl px-5"
+                className="h-11 rounded-full px-5"
                 variant="secondary"
               >
                 <Link href={loginHref}>Dùng thử tài khoản khách</Link>
@@ -353,139 +356,6 @@ function LockedDigitalFridgePrompt() {
         </Card>
       </div>
     </section>
-  );
-}
-
-function LockedHeroPreview() {
-  return (
-    <div className="rounded-[2rem] border bg-card p-5 shadow-[0_24px_70px_rgba(15,75,54,0.12)] sm:p-6">
-      <div className="rounded-[1.5rem] border bg-background p-5 sm:p-6">
-        <div className="flex items-center gap-3">
-          <span className="flex size-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-            <Refrigerator aria-hidden={true} className="size-5" />
-          </span>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">
-              Tủ lạnh số cá nhân
-            </p>
-            <h2 className="font-heading text-lg font-semibold">
-              Mở sau khi đăng nhập
-            </h2>
-          </div>
-        </div>
-
-        <p className="mt-5 text-sm leading-6 text-muted-foreground">
-          Dashboard cá nhân sẽ hiển thị danh sách thực phẩm, hạn dùng và gợi ý
-          ưu tiên sau khi bạn đăng nhập hoặc dùng tài khoản khách.
-        </p>
-
-        <div className="mt-5 grid gap-3 text-sm sm:grid-cols-3">
-          {["Thực phẩm của bạn", "Hạn dùng", "Món nên dùng trước"].map((item) => (
-            <div
-              className="rounded-2xl border bg-card px-3 py-3 text-center font-medium text-muted-foreground"
-              key={item}
-            >
-              {item}
-            </div>
-          ))}
-        </div>
-
-        <Button asChild className="mt-6 h-11 w-full rounded-2xl">
-          <a href="#digital-fridge">
-            Xem cách bắt đầu
-            <ArrowRight aria-hidden={true} className="size-4" />
-          </a>
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-function DashboardMockup() {
-  return (
-    <div className="rounded-[2rem] border bg-card p-3 shadow-[0_24px_70px_rgba(15,75,54,0.16)] sm:p-4">
-      <div className="overflow-hidden rounded-[1.5rem] border bg-background">
-        <div className="flex items-center justify-between border-b bg-card px-4 py-4 sm:px-5">
-          <div className="flex items-center gap-3">
-            <span className="flex size-10 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-              <Refrigerator aria-hidden="true" className="size-5" />
-            </span>
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">
-                Tủ lạnh số
-              </p>
-              <h2 className="font-heading text-lg font-semibold">
-                Bếp hôm nay
-              </h2>
-            </div>
-          </div>
-          <FoodStatusBadge status="use_soon" />
-        </div>
-
-        <div className="grid gap-4 p-4 sm:p-5 lg:grid-cols-[0.82fr_1.18fr]">
-          <div className="rounded-3xl border bg-card p-4">
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <div>
-                <p className="text-sm font-semibold">Khu vực bảo quản</p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Cập nhật theo dữ liệu thực
-                </p>
-              </div>
-              <MapPin aria-hidden="true" className="size-5 text-primary" />
-            </div>
-
-            <div className="space-y-3">
-              {[
-                ["Ngăn mát", "6 món"],
-                ["Ngăn đông", "2 món"],
-                ["Nhiệt độ phòng", "3 món"],
-              ].map(([area, count]) => (
-                <div
-                  className="flex items-center justify-between rounded-2xl border bg-background px-3 py-3 text-sm"
-                  key={area}
-                >
-                  <span className="font-medium">{area}</span>
-                  <span className="text-muted-foreground">{count}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            {foodRows.map((item) => (
-              <div
-                className="rounded-3xl border bg-card px-4 py-3 shadow-sm"
-                key={item.name}
-              >
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <p className="font-semibold">{item.name}</p>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {item.location} · {item.note}
-                    </p>
-                  </div>
-                  <FoodStatusBadge status={item.status} />
-                </div>
-              </div>
-            ))}
-
-            <div className="rounded-3xl border border-dashed bg-accent/40 p-4">
-              <div className="flex items-center gap-3">
-                <span className="flex size-10 items-center justify-center rounded-2xl bg-card text-primary">
-                  <Plus aria-hidden="true" className="size-5" />
-                </span>
-                <div>
-                  <p className="font-semibold">Thêm thực phẩm</p>
-                  <p className="text-sm text-muted-foreground">
-                    Quét mã hoặc nhập tay trong vài bước.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   );
 }
 
