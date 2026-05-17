@@ -1,8 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { Leaf, LogOut, Moon, Sun, UserRound } from "lucide-react";
+import {
+  Leaf,
+  LogOut,
+  Menu,
+  Moon,
+  Plus,
+  ScanLine,
+  Sun,
+  UserRound,
+  X,
+} from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetClose,
+} from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { useAuthHint, clearAuthHint, useAuthUserHint } from "@/lib/auth-session";
 import { logout as apiLogout } from "@/lib/api/auth";
@@ -19,11 +38,17 @@ const navItems = [
   { href: "/#features", label: "Tính năng" },
 ];
 
+const mobileActions = [
+  { href: "/foods/scan", label: "Quét mã vạch", icon: ScanLine },
+  { href: "/foods/new", label: "Thêm thực phẩm", icon: Plus },
+];
+
 export function AppHeader({ className }: AppHeaderProps) {
   const hasAuth = useAuthHint();
   const userHint = useAuthUserHint();
   const router = useRouter();
   const { resolved, toggle } = useTheme();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -64,6 +89,7 @@ export function AppHeader({ className }: AppHeaderProps) {
           </span>
         </Link>
 
+        {/* Desktop nav */}
         <nav
           aria-label="Điều hướng chính"
           className="hidden items-center gap-1 md:flex"
@@ -93,36 +119,145 @@ export function AppHeader({ className }: AppHeaderProps) {
             )}
           </Button>
 
-          {hasAuth ? (
-            <>
-              <span className="inline-flex h-9 max-w-48 items-center gap-2 rounded-full border bg-background px-3 text-sm text-foreground">
-                <UserRound aria-hidden={true} className="size-4 shrink-0 text-primary" />
-                <span className="hidden text-muted-foreground sm:inline">Xin chào,</span>
-                <span className="truncate font-medium">{displayName}</span>
-              </span>
+          {/* Desktop auth area */}
+          <div className="hidden md:flex md:items-center md:gap-2">
+            {hasAuth ? (
+              <>
+                <span className="inline-flex h-9 max-w-48 items-center gap-2 rounded-full border bg-background px-3 text-sm text-foreground">
+                  <UserRound aria-hidden={true} className="size-4 shrink-0 text-primary" />
+                  <span className="hidden text-muted-foreground sm:inline">Xin chào,</span>
+                  <span className="truncate font-medium">{displayName}</span>
+                </span>
+                <Button
+                  aria-label="Đăng xuất"
+                  onClick={handleLogout}
+                  size="sm"
+                  title="Đăng xuất"
+                  type="button"
+                  variant="outline"
+                  className="h-10 gap-2 rounded-full px-3"
+                >
+                  <LogOut aria-hidden={true} className="size-4" />
+                  <span className="hidden sm:inline">Đăng xuất</span>
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button asChild size="sm" variant="outline" className="rounded-full">
+                  <Link href="/login">Đăng nhập</Link>
+                </Button>
+                <Button asChild size="sm" className="rounded-full">
+                  <Link href="/signup">Đăng ký</Link>
+                </Button>
+              </>
+            )}
+          </div>
+
+          {/* Mobile hamburger menu */}
+          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+            <SheetTrigger asChild>
               <Button
-                aria-label="Đăng xuất"
-                onClick={handleLogout}
-                size="sm"
-                title="Đăng xuất"
+                aria-label="Mở menu"
+                className="size-10 rounded-full md:hidden"
+                size="icon"
                 type="button"
-                variant="outline"
-                className="h-10 gap-2 rounded-full px-3"
+                variant="ghost"
               >
-                <LogOut aria-hidden={true} className="size-4" />
-                <span className="hidden sm:inline">Đăng xuất</span>
+                <Menu className="size-5" />
               </Button>
-            </>
-          ) : (
-            <>
-              <Button asChild size="sm" variant="outline" className="rounded-full">
-                <Link href="/login">Đăng nhập</Link>
-              </Button>
-              <Button asChild size="sm" className="rounded-full">
-                <Link href="/signup">Đăng ký</Link>
-              </Button>
-            </>
-          )}
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[300px] p-0">
+              <SheetHeader className="border-b px-5 py-4">
+                <SheetTitle className="flex items-center gap-2 text-base">
+                  <Leaf className="size-5 text-primary" />
+                  Bếp An Tâm
+                </SheetTitle>
+              </SheetHeader>
+
+              <div className="flex flex-col gap-1 p-4">
+                {/* User info on mobile */}
+                {hasAuth && (
+                  <div className="mb-3 flex items-center gap-3 rounded-2xl bg-muted/50 p-3">
+                    <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+                      <UserRound className="size-5 text-primary" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs text-muted-foreground">
+                        Xin chào,
+                      </p>
+                      <p className="truncate text-sm font-semibold">
+                        {displayName}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Nav items */}
+                {navItems.map((item) => (
+                  <SheetClose asChild key={item.href}>
+                    <Link
+                      href={item.href}
+                      className="rounded-xl px-4 py-3 text-sm font-medium text-foreground transition hover:bg-muted"
+                    >
+                      {item.label}
+                    </Link>
+                  </SheetClose>
+                ))}
+
+                {/* Divider */}
+                <div className="my-2 h-px bg-border" />
+
+                {/* Quick actions */}
+                {hasAuth &&
+                  mobileActions.map((action) => (
+                    <SheetClose asChild key={action.href}>
+                      <Link
+                        href={action.href}
+                        className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-foreground transition hover:bg-muted"
+                      >
+                        <action.icon className="size-4 text-primary" />
+                        {action.label}
+                      </Link>
+                    </SheetClose>
+                  ))}
+
+                {/* Auth actions */}
+                <div className="mt-auto pt-4">
+                  {hasAuth ? (
+                    <Button
+                      className="h-11 w-full rounded-2xl"
+                      onClick={() => {
+                        setMobileOpen(false);
+                        handleLogout();
+                      }}
+                      type="button"
+                      variant="outline"
+                    >
+                      <LogOut className="size-4" />
+                      Đăng xuất
+                    </Button>
+                  ) : (
+                    <div className="flex flex-col gap-2">
+                      <SheetClose asChild>
+                        <Button asChild className="h-11 rounded-2xl">
+                          <Link href="/login">Đăng nhập</Link>
+                        </Button>
+                      </SheetClose>
+                      <SheetClose asChild>
+                        <Button
+                          asChild
+                          className="h-11 rounded-2xl"
+                          variant="outline"
+                        >
+                          <Link href="/signup">Đăng ký miễn phí</Link>
+                        </Button>
+                      </SheetClose>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </header>

@@ -39,6 +39,12 @@ export function QrScanner({
   const [isStarting, setIsStarting] = useState(false);
   const hasScannedRef = useRef(false);
 
+  // Stabilize callbacks with refs to avoid restarting scanner on re-render
+  const onScanSuccessRef = useRef(onScanSuccess);
+  onScanSuccessRef.current = onScanSuccess;
+  const onScanErrorRef = useRef(onScanError);
+  onScanErrorRef.current = onScanError;
+
   const stopScanner = useCallback(async () => {
     const scanner = scannerRef.current;
     if (!scanner) return;
@@ -78,11 +84,11 @@ export function QrScanner({
             if (hasScannedRef.current) return;
             hasScannedRef.current = true;
 
-            onScanSuccess(decodedText);
+            onScanSuccessRef.current(decodedText);
           },
           (errorMessage) => {
             // This fires continuously while scanning — ignore unless needed
-            onScanError?.(errorMessage);
+            onScanErrorRef.current?.(errorMessage);
           }
         );
         setIsStarting(false);
@@ -106,7 +112,7 @@ export function QrScanner({
     return () => {
       stopScanner();
     };
-  }, [isActive, onScanSuccess, onScanError, stopScanner]);
+  }, [isActive, stopScanner]);
 
   return (
     <div className={className}>

@@ -61,17 +61,17 @@ const SOURCE_CONFIG = {
   openfoodfacts: {
     label: "Open Food Facts",
     icon: Globe,
-    color: "text-blue-700 bg-blue-50 border-blue-200",
+    color: "text-blue-700 bg-blue-50 border-blue-200 dark:text-blue-300 dark:bg-blue-950/40 dark:border-blue-800",
   },
   local_db: {
     label: "CSDL nội bộ",
     icon: HardDrive,
-    color: "text-emerald-700 bg-emerald-50 border-emerald-200",
+    color: "text-emerald-700 bg-emerald-50 border-emerald-200 dark:text-emerald-300 dark:bg-emerald-950/40 dark:border-emerald-800",
   },
   raw_barcode: {
     label: "Mã vạch thô",
     icon: Barcode,
-    color: "text-amber-700 bg-amber-50 border-amber-200",
+    color: "text-amber-700 bg-amber-50 border-amber-200 dark:text-amber-300 dark:bg-amber-950/40 dark:border-amber-800",
   },
 };
 
@@ -519,7 +519,7 @@ function ProductDonePhase({
       initial={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.4 }}
     >
-      <Card className="border-emerald-200 bg-emerald-50/50">
+      <Card className="border-emerald-200 bg-emerald-50/50 dark:border-emerald-800 dark:bg-emerald-950/30">
         <CardContent className="flex flex-col items-center px-6 py-12 text-center">
           <motion.div
             animate={{ scale: 1 }}

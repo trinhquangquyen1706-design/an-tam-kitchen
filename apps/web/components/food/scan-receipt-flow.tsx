@@ -466,7 +466,7 @@ function DonePhase({
       initial={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.4 }}
     >
-      <Card className="border-emerald-200 bg-emerald-50/50">
+      <Card className="border-emerald-200 bg-emerald-50/50 dark:border-emerald-800 dark:bg-emerald-950/30">
         <CardContent className="flex flex-col items-center px-6 py-12 text-center">
           <motion.div
             animate={{ scale: 1 }}
@@ -595,7 +595,7 @@ function ScannedItemCard({
             <div className="mt-1.5 flex flex-wrap gap-1.5">
               {/* Manufacturing date */}
               {item.manufacturingDate && (
-                <span className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-2 py-0.5 text-xs text-blue-700">
+                <span className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-2 py-0.5 text-xs text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
                   <Factory aria-hidden={true} className="size-3" />
                   NSX: {formatDateVN(item.manufacturingDate)}
                 </span>
@@ -609,12 +609,12 @@ function ScannedItemCard({
 
               {/* HSD source badge */}
               {isManufacturer ? (
-                <span className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                <span className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
                   <ShieldCheck aria-hidden={true} className="size-3" />
                   HSD chính xác
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 rounded-lg border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
+                <span className="inline-flex items-center gap-1 rounded-lg border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
                   <Timer aria-hidden={true} className="size-3" />
                   HSD ước lượng
                 </span>

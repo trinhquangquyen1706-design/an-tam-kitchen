@@ -19,6 +19,14 @@ export const metadata: Metadata = {
   title: "Bếp An Tâm | Tủ lạnh số cho gia đình",
   description:
     "Bếp An Tâm giúp theo dõi thực phẩm đã mở nắp, nhắc hạn dùng và giảm lãng phí trong gia đình.",
+  keywords: [
+    "quản lý thực phẩm",
+    "tủ lạnh số",
+    "hạn sử dụng",
+    "bếp an tâm",
+    "food tracker",
+    "mở nắp",
+  ],
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -28,6 +36,20 @@ export const metadata: Metadata = {
   icons: {
     icon: "/icons/icon-192x192.png",
     apple: "/icons/icon-192x192.png",
+  },
+  openGraph: {
+    title: "Bếp An Tâm | Tủ lạnh số cho gia đình",
+    description:
+      "Theo dõi thực phẩm đã mở nắp, nhắc hạn dùng và giảm lãng phí thực phẩm trong gia đình.",
+    siteName: "Bếp An Tâm",
+    locale: "vi_VN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Bếp An Tâm | Tủ lạnh số cho gia đình",
+    description:
+      "Theo dõi thực phẩm đã mở nắp, nhắc hạn dùng và giảm lãng phí thực phẩm.",
   },
 };
 

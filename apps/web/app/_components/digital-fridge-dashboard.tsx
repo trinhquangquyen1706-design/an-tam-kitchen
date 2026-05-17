@@ -9,7 +9,7 @@ import {
   MapPin,
   NotebookText,
   Plus,
-  QrCode,
+  ScanLine,
   Refrigerator,
   SearchCheck,
   ShoppingCart,
@@ -135,8 +135,8 @@ function DashboardContent() {
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button asChild className="h-12 rounded-full px-5 text-base" variant="outline">
             <Link href={scanHref}>
-              <QrCode aria-hidden={true} className="size-4" />
-              Quét hóa đơn
+              <ScanLine aria-hidden={true} className="size-4" />
+              Quét mã vạch
             </Link>
           </Button>
           <Button asChild className="h-12 rounded-full px-5 text-base">
@@ -149,7 +149,7 @@ function DashboardContent() {
       </div>
 
       {usingMockFallback ? (
-        <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-950">
+        <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-950 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
           Đang hiển thị dữ liệu mẫu. Kết nối internet để đồng bộ dữ liệu mới nhất.
         </div>
       ) : null}
@@ -301,9 +301,9 @@ function StatCard({
 }) {
   const toneClassName = {
     default: "bg-accent text-accent-foreground",
-    amber: "bg-amber-50 text-amber-900",
-    orange: "bg-orange-50 text-orange-900",
-    emerald: "bg-emerald-50 text-emerald-900",
+    amber: "bg-amber-50 text-amber-900 dark:bg-amber-950/40 dark:text-amber-200",
+    orange: "bg-orange-50 text-orange-900 dark:bg-orange-950/40 dark:text-orange-200",
+    emerald: "bg-emerald-50 text-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-200",
   }[tone];
 
   return (
