@@ -254,26 +254,30 @@ function DashboardContent() {
     return items;
   }, [allFoods, searchQuery, categoryFilter, sortBy]);
 
-  // ─── KPI Stats ──────────────────────────────
+  // ─── KPI Stats (polished for BKI demo) ──────
   const stats = useMemo(() => {
     const expiring = allFoods.filter(
       (f) => f.status === "nearing" || f.status === "expired"
     );
     const expired = allFoods.filter((f) => f.status === "expired");
-    // Estimate waste: expired items × average price ~35,000đ
-    const wasteEstimate = expired.length * 35000;
+    // Use polished demo values when showing mock data
+    const isMockData = realItems.length === 0;
+    const wasteEstimate = isMockData ? 250000 : expired.length * 35000;
+    const totalDisplay = isMockData ? 86 : allFoods.length;
+    const locationCount = isMockData ? 4 : new Set(allFoods.map((f) => f.status)).size;
 
     return {
-      expiringCount: expiring.length,
-      expiringNames: expiring
-        .slice(0, 3)
-        .map((f) => f.name)
-        .join(", "),
-      totalCount: allFoods.length,
-      categoryCount: new Set(allFoods.map((f) => f.status)).size,
+      expiringCount: isMockData ? 3 : expiring.length,
+      expiringNames: isMockData
+        ? "Sữa tươi, Cải bó xôi, Sữa chua"
+        : expiring.slice(0, 3).map((f) => f.name).join(", "),
+      totalCount: totalDisplay,
+      locationText: isMockData
+        ? "Thuộc 4 vị trí lưu trữ"
+        : `Thuộc ${locationCount} nhóm trạng thái`,
       wasteValue: wasteEstimate,
     };
-  }, [allFoods]);
+  }, [allFoods, realItems.length]);
 
   // ─── Handlers ───────────────────────────────
   const handleEat = (id: string) => {
@@ -361,7 +365,7 @@ function DashboardContent() {
                 {stats.totalCount}
               </p>
               <p className="mt-1.5 text-xs text-muted-foreground">
-                Thuộc {stats.categoryCount} nhóm trạng thái
+                {stats.locationText}
               </p>
             </div>
             <div className="flex size-12 items-center justify-center rounded-2xl bg-emerald-50 dark:bg-emerald-950/40">

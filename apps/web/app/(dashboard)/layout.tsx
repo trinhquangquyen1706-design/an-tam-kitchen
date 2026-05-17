@@ -28,26 +28,21 @@ import { logout as apiLogout } from "@/lib/api/auth";
 const navItems = [
   {
     href: "/dashboard",
-    label: "Bảng điều khiển",
-    icon: LayoutDashboard,
-  },
-  {
-    href: "/dashboard/inventory",
     label: "Kho thực phẩm",
     icon: Package,
   },
   {
-    href: "/dashboard/shopping",
+    href: "/shopping-list",
     label: "Danh sách đi chợ",
     icon: ShoppingCart,
   },
   {
-    href: "/dashboard/reports",
+    href: "/reports",
     label: "Báo cáo thống kê",
     icon: BarChart3,
   },
   {
-    href: "/dashboard/settings",
+    href: "/settings",
     label: "Cài đặt hệ thống",
     icon: Settings,
   },
@@ -87,12 +82,12 @@ export default function DashboardLayout({
       {/* ═══ SIDEBAR ═══ */}
       <aside
         className={cn(
-          "sticky top-0 z-30 flex h-dvh flex-col border-r bg-[oklch(0.96_0.025_150)] transition-all duration-300 dark:bg-[oklch(0.22_0.03_150)]",
+          "sticky top-0 z-30 flex h-dvh flex-col border-r border-slate-100 bg-white transition-all duration-300 dark:border-slate-800 dark:bg-[oklch(0.22_0.03_150)]",
           collapsed ? "w-[72px]" : "w-64"
         )}
       >
         {/* ── Brand ── */}
-        <div className="flex min-h-16 items-center gap-3 border-b px-4">
+        <div className="flex min-h-16 items-center gap-3 border-b border-slate-100 px-4 dark:border-slate-800">
           <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
             <Leaf aria-hidden className="size-5" />
           </span>
@@ -135,7 +130,7 @@ export default function DashboardLayout({
         </nav>
 
         {/* ── Collapse toggle ── */}
-        <div className="border-t px-3 py-2">
+        <div className="border-t border-slate-100 px-3 py-2 dark:border-slate-800">
           <Button
             aria-label={collapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"}
             className="w-full justify-center rounded-xl"
@@ -156,7 +151,7 @@ export default function DashboardLayout({
         </div>
 
         {/* ── Footer: Theme + User ── */}
-        <div className="space-y-2 border-t p-3">
+        <div className="space-y-2 border-t border-slate-100 p-3 dark:border-slate-800">
           {/* Dark mode */}
           <Button
             className={cn("w-full justify-start gap-3 rounded-xl", collapsed && "justify-center")}
@@ -188,7 +183,7 @@ export default function DashboardLayout({
             {!collapsed && (
               <div className="min-w-0 flex-1">
                 <p className="truncate text-xs font-medium text-foreground">
-                  Xin chào,
+                  Xin chào, Chef An Tâm
                 </p>
                 <p className="truncate text-xs text-muted-foreground">
                   {displayName}
@@ -212,7 +207,7 @@ export default function DashboardLayout({
       </aside>
 
       {/* ═══ MAIN CONTENT ═══ */}
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto bg-[#F8F9FA] dark:bg-background">
         {children}
       </main>
     </div>
