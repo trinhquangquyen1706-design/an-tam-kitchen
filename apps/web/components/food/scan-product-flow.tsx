@@ -191,7 +191,7 @@ export function ScanProductFlow() {
           <ProductDonePhase
             key="done"
             productName={product?.name ?? "Sản phẩm"}
-            onGoToDashboard={() => router.push("/#digital-fridge")}
+            onGoToDashboard={() => router.push("/dashboard")}
             onScanMore={() => {
               setPhase("scan");
               setProduct(null);

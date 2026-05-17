@@ -76,6 +76,9 @@ const steps = [
 export function LandingPage() {
   const reduceMotion = useReducedMotion();
   const hasAuth = useAuthHint();
+  const dashboardHref = hasAuth
+    ? "/dashboard"
+    : getAuthRequiredHref("/dashboard");
   const addFoodHref = hasAuth
     ? "/foods/new"
     : getAuthRequiredHref("/foods/new");
@@ -115,10 +118,10 @@ export function LandingPage() {
                   asChild
                   className="h-12 justify-center rounded-full px-7 text-base font-semibold shadow-md hover:shadow-lg transition-shadow"
                 >
-                  <a href="#digital-fridge">
+                  <Link href={dashboardHref}>
                     Xem tủ lạnh số
                     <ArrowRight aria-hidden="true" className="ml-1 size-4" />
-                  </a>
+                  </Link>
                 </Button>
                 <Button
                   asChild
@@ -311,7 +314,7 @@ export function LandingPage() {
 }
 
 function LockedDigitalFridgePrompt() {
-  const loginHref = getAuthRequiredHref("/#digital-fridge");
+  const loginHref = getAuthRequiredHref("/dashboard");
 
   return (
     <section className="scroll-mt-20 bg-card py-12 sm:py-16" id="digital-fridge">

@@ -197,7 +197,7 @@ export function ScanReceiptFlow() {
           <DonePhase
             key="done"
             successCount={bulkAddMutation.data?.success ?? 0}
-            onGoToDashboard={() => router.push("/#digital-fridge")}
+            onGoToDashboard={() => router.push("/dashboard")}
             onScanMore={() => {
               setPhase("scan");
               setReceiptData(null);

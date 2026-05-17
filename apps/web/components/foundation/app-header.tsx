@@ -34,7 +34,7 @@ type AppHeaderProps = {
 };
 
 const navItems = [
-  { href: "/#digital-fridge", label: "Tủ lạnh" },
+  { href: "/dashboard", label: "Tủ lạnh" },
   { href: "/#add-food", label: "Cách hoạt động" },
   { href: "/#features", label: "Tính năng" },
 ];
@@ -101,14 +101,6 @@ export function AppHeader({ className }: AppHeaderProps) {
               <Link href={item.href}>{item.label}</Link>
             </Button>
           ))}
-          {hasAuth && (
-            <Button asChild size="sm" variant="default" className="ml-1 rounded-full">
-              <Link href="/dashboard">
-                <LayoutDashboard className="size-4" />
-                Bảng điều khiển
-              </Link>
-            </Button>
-          )}
         </nav>
 
         <div className="flex items-center gap-2">

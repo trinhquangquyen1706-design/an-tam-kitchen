@@ -105,7 +105,7 @@ export function AddFoodForm() {
       toast.success(`Đã thêm "${values.name}" vào tủ lạnh`, {
         description: "Danh sách đã được cập nhật.",
       });
-      router.push("/#digital-fridge");
+      router.push("/dashboard");
     } catch (error) {
       if (isAuthError(error)) {
         clearAuthHint();
@@ -304,7 +304,7 @@ export function AddFoodForm() {
           className="h-11 justify-center rounded-2xl"
           variant="outline"
         >
-          <Link href="/#digital-fridge">
+          <Link href="/dashboard">
             <ArrowLeft aria-hidden={true} className="size-4" />
             Quay lại tủ lạnh
           </Link>

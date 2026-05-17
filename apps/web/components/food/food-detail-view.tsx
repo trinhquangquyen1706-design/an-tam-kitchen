@@ -274,7 +274,7 @@ function FoodDetailContent({ foodId }: { foodId: string }) {
                       `Đã xóa "${food.displayName}" khỏi tủ lạnh`,
                       { description: "Danh sách đã được cập nhật." },
                     );
-                    router.push("/#digital-fridge");
+                    router.push("/dashboard");
                   } catch {
                     toast.error("Không thể xóa thực phẩm", {
                       description: "Vui lòng thử lại sau.",
@@ -333,7 +333,7 @@ function BackToDashboard({ className }: { className?: string }) {
       )}
       variant="outline"
     >
-      <Link href="/#digital-fridge">
+      <Link href="/dashboard">
         <ArrowLeft aria-hidden={true} className="size-4" />
         Quay lại tủ lạnh
       </Link>
