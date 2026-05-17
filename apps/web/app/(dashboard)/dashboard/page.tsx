@@ -116,17 +116,52 @@ const SORT_OPTIONS = [
   { value: "newest", label: "Mới thêm gần đây" },
 ];
 
-// ─── Food image mapping by category ────────────────────────
+// ─── Food image mapping by category + name ─────────────────
 
-const FOOD_IMAGES: Record<string, string> = {
+const CATEGORY_IMAGES: Record<string, string> = {
   milk: "/images/foods/milk.png",
   eggs: "/images/foods/eggs.png",
-  sauce: "/images/foods/peppers.png",
-  sausage: "/images/foods/chicken.png",
-  canned_food: "/images/foods/yogurt.png",
-  drink: "/images/foods/milk.png",
-  other: "/images/foods/spinach.png",
+  sauce: "/images/foods/sauce.png",
+  sausage: "/images/foods/sausage.png",
+  canned_food: "/images/foods/canned.png",
+  drink: "/images/foods/drink.png",
+  other: "/images/foods/other.png",
 };
+
+/** Name-based keywords → specific image for better visual matching */
+const NAME_IMAGE_RULES: Array<{ keywords: string[]; image: string }> = [
+  { keywords: ["sữa tươi", "sữa bò", "milk"], image: "/images/foods/milk.png" },
+  { keywords: ["sữa chua", "yogurt", "yaourt"], image: "/images/foods/yogurt.png" },
+  { keywords: ["trứng", "egg"], image: "/images/foods/eggs.png" },
+  { keywords: ["phô mai", "cheese", "cheddar"], image: "/images/foods/cheese.png" },
+  { keywords: ["bơ", "avocado"], image: "/images/foods/avocado.png" },
+  { keywords: ["gà", "chicken", "ức gà"], image: "/images/foods/chicken.png" },
+  { keywords: ["ớt", "pepper", "chuông"], image: "/images/foods/peppers.png" },
+  { keywords: ["rau", "cải", "spinach", "xà lách"], image: "/images/foods/spinach.png" },
+  { keywords: ["xúc xích", "sausage", "giò"], image: "/images/foods/sausage.png" },
+  { keywords: ["tương", "nước mắm", "sauce", "ketchup"], image: "/images/foods/sauce.png" },
+  { keywords: ["nước", "trà", "cà phê", "drink", "juice"], image: "/images/foods/drink.png" },
+  { keywords: ["đồ hộp", "canned", "lon"], image: "/images/foods/canned.png" },
+];
+
+function getFoodImage(name: string, category?: string): string {
+  const lowerName = name.toLowerCase();
+
+  // 1. Try name-based matching first (most accurate)
+  for (const rule of NAME_IMAGE_RULES) {
+    if (rule.keywords.some((kw) => lowerName.includes(kw))) {
+      return rule.image;
+    }
+  }
+
+  // 2. Fall back to category-based mapping
+  if (category && CATEGORY_IMAGES[category]) {
+    return CATEGORY_IMAGES[category];
+  }
+
+  // 3. Default fallback
+  return "/images/foods/other.png";
+}
 
 function mapViewModelToVisualItem(item: FoodItemViewModel): VisualFoodItem {
   const now = new Date();
@@ -142,7 +177,7 @@ function mapViewModelToVisualItem(item: FoodItemViewModel): VisualFoodItem {
     id: item.id,
     name: item.displayName,
     quantity: item.quantity || `Phân loại: ${item.categoryLabel}`,
-    imageSrc: FOOD_IMAGES[item.category ?? "other"] ?? "/images/foods/spinach.png",
+    imageSrc: getFoodImage(item.displayName, item.category ?? undefined),
     expiryDate: item.expiryDate,
     status,
   };
