@@ -5,6 +5,7 @@ import {
   BellRing,
   CalendarDays,
   ClipboardCheck,
+  LayoutDashboard,
   Lock,
   Plus,
   ScanLine,
@@ -26,7 +27,6 @@ import {
 } from "@/components/ui/card";
 import { getAuthRequiredHref, useAuthHint } from "@/lib/auth-session";
 import { cn } from "@/lib/utils";
-import { DigitalFridgeDashboard } from "./digital-fridge-dashboard";
 
 type Feature = {
   title: string;
@@ -190,7 +190,7 @@ export function LandingPage() {
         {/* ═══════════════════════════════════════════════════════════ */}
         {/* DIGITAL FRIDGE DASHBOARD                                   */}
         {/* ═══════════════════════════════════════════════════════════ */}
-        {hasAuth ? <DigitalFridgeDashboard /> : <LockedDigitalFridgePrompt />}
+        {hasAuth ? <DashboardRedirectPrompt /> : <LockedDigitalFridgePrompt />}
 
         {/* ═══════════════════════════════════════════════════════════ */}
         {/* FEATURES SECTION                                           */}
@@ -296,7 +296,7 @@ export function LandingPage() {
             </p>
             <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
               <Button asChild className="h-12 rounded-full px-7 text-base">
-                <a href="#digital-fridge">Xem tủ lạnh số</a>
+                <Link href={dashboardHref}>Xem tủ lạnh số</Link>
               </Button>
               <Button
                 asChild
@@ -403,5 +403,49 @@ function SectionIntro({
         {description}
       </p>
     </div>
+  );
+}
+
+function DashboardRedirectPrompt() {
+  return (
+    <section className="scroll-mt-20 bg-card py-12 sm:py-16" id="digital-fridge">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <Card className="rounded-3xl border bg-background shadow-sm">
+          <CardHeader className="items-center px-5 pt-8 text-center sm:px-8 sm:pt-10">
+            <span className="mb-3 flex size-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
+              <LayoutDashboard aria-hidden={true} className="size-5" />
+            </span>
+            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-primary">
+              Tủ lạnh số
+            </p>
+            <CardTitle className="mt-2 text-2xl font-semibold leading-tight tracking-normal sm:text-3xl">
+              Bảng điều khiển đã sẵn sàng
+            </CardTitle>
+            <CardDescription className="max-w-2xl text-base leading-7">
+              Xem toàn bộ thực phẩm, theo dõi hạn sử dụng, ước tính lãng phí và
+              quản lý tủ lạnh số của bạn tại bảng điều khiển.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="px-5 pb-8 sm:px-8 sm:pb-10">
+            <div className="flex flex-col justify-center gap-3 sm:flex-row">
+              <Button asChild className="h-11 rounded-full px-6 text-base shadow-md">
+                <Link href="/dashboard">
+                  <LayoutDashboard className="size-4" />
+                  Vào bảng điều khiển
+                  <ArrowRight className="size-4" />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                className="h-11 rounded-full px-6 text-base"
+                variant="outline"
+              >
+                <Link href="/foods/scan">Quét thêm thực phẩm</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </section>
   );
 }
