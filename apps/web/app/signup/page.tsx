@@ -47,9 +47,9 @@ export default function SignupPage() {
 
       if (signedUpUser) {
         setAuthHint({ name, email, ...signedUpUser });
-        setMessage("Đăng ký thành công! Đang chuyển về trang chủ...");
+        setMessage("Đăng ký thành công! Đang chuyển đến bảng điều khiển...");
         setTimeout(() => {
-          router.push("/");
+          router.push("/dashboard");
         }, 1500);
         return;
       }

@@ -85,7 +85,7 @@ export default function LoginPage() {
       );
       setMessage("Đăng nhập thành công! Đang chuyển tiếp...");
       setTimeout(() => {
-        router.push(safeNext ?? "/");
+        router.push(safeNext ?? "/dashboard");
       }, 1000);
     } catch (err) {
       if (isGuest) {
@@ -123,7 +123,7 @@ export default function LoginPage() {
         }
       );
       setMessage("Đăng nhập khách thành công!");
-      router.push(safeNext ?? "/");
+      router.push(safeNext ?? "/dashboard");
     } catch {
       setError(
         "Không thể tạo tài khoản khách. Vui lòng thử lại sau."

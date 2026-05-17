@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import {
+  LayoutDashboard,
   Leaf,
   LogOut,
   Menu,
@@ -39,6 +40,7 @@ const navItems = [
 ];
 
 const mobileActions = [
+  { href: "/dashboard", label: "Bảng điều khiển", icon: LayoutDashboard },
   { href: "/foods/scan", label: "Quét mã vạch", icon: ScanLine },
   { href: "/foods/new", label: "Thêm thực phẩm", icon: Plus },
 ];
@@ -99,6 +101,14 @@ export function AppHeader({ className }: AppHeaderProps) {
               <Link href={item.href}>{item.label}</Link>
             </Button>
           ))}
+          {hasAuth && (
+            <Button asChild size="sm" variant="default" className="ml-1 rounded-full">
+              <Link href="/dashboard">
+                <LayoutDashboard className="size-4" />
+                Bảng điều khiển
+              </Link>
+            </Button>
+          )}
         </nav>
 
         <div className="flex items-center gap-2">
