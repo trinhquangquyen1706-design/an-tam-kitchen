@@ -12,7 +12,6 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useSyncExternalStore } from "react";
-import { AppHeader } from "@/components/foundation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -136,15 +135,44 @@ export default function LoginPage() {
   const anyLoading = isLoading || isGuestLoading;
 
   return (
-    <div className="flex min-h-dvh flex-col bg-background">
-      <AppHeader />
+    <div className="flex min-h-dvh bg-background">
+      {/* ═══ LEFT: Brand Panel (hidden on mobile) ═══ */}
+      <div className="relative hidden flex-col justify-between overflow-hidden p-10 text-white lg:flex lg:w-[45%]" style={{ background: 'linear-gradient(145deg, oklch(0.38 0.10 158), oklch(0.30 0.08 158) 60%, oklch(0.25 0.06 170))' }}>
+        {/* Decorative radial glow */}
+        <div className="pointer-events-none absolute -right-20 -top-20 size-80 rounded-full opacity-20" aria-hidden="true" style={{ background: 'radial-gradient(circle, oklch(0.75 0.12 158 / 0.6), transparent 70%)' }} />
+        <div className="pointer-events-none absolute -bottom-16 -left-16 size-60 rounded-full opacity-15" aria-hidden="true" style={{ background: 'radial-gradient(circle, oklch(0.80 0.10 90 / 0.4), transparent 70%)' }} />
 
+        <Link href="/" className="relative inline-flex items-center gap-3">
+          <span className="flex size-10 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
+            <Leaf aria-hidden="true" className="size-5" />
+          </span>
+          <span className="font-heading text-lg font-semibold">Bếp An Tâm</span>
+        </Link>
+
+        <div className="relative space-y-4">
+          <h2 className="font-heading text-3xl font-bold leading-tight">
+            Quản lý thực phẩm thông minh cho gia đình Việt
+          </h2>
+          <p className="max-w-md text-base leading-7 text-white/75">
+            Theo dõi ngày mở nắp, hạn dùng, và giảm lãng phí thực phẩm, tất cả trong một ứng dụng duy nhất.
+          </p>
+        </div>
+
+        <p className="relative text-sm text-white/50">
+          &copy; {new Date().getFullYear()} Bếp An Tâm. BKI Innovation.
+        </p>
+      </div>
+
+      {/* ═══ RIGHT: Login Form ═══ */}
       <main className="flex flex-1 items-center justify-center px-4 py-12 sm:px-6">
         <div className="w-full max-w-md space-y-6">
-          <div className="flex flex-col items-center gap-3 text-center">
-            <span className="flex size-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md">
-              <Leaf aria-hidden="true" className="size-7" />
-            </span>
+          {/* Mobile-only branding */}
+          <div className="flex flex-col items-center gap-3 text-center lg:hidden">
+            <Link href="/" className="inline-flex items-center gap-3">
+              <span className="flex size-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md">
+                <Leaf aria-hidden="true" className="size-7" />
+              </span>
+            </Link>
             <div>
               <h1 className="font-heading text-2xl font-semibold text-foreground">
                 Chào mừng trở lại!
@@ -153,6 +181,16 @@ export default function LoginPage() {
                 Đăng nhập để quản lý tủ lạnh của bạn
               </p>
             </div>
+          </div>
+
+          {/* Desktop heading (no icon since brand is on left) */}
+          <div className="hidden lg:block">
+            <h1 className="font-heading text-2xl font-semibold text-foreground">
+              Chào mừng trở lại!
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Đăng nhập để quản lý tủ lạnh của bạn
+            </p>
           </div>
 
           <Card>
@@ -230,7 +268,7 @@ export default function LoginPage() {
                   </div>
                 ) : null}
 
-                <Button className="h-11 w-full" disabled={anyLoading} type="submit">
+                <Button className="h-11 w-full active:scale-[0.98]" disabled={anyLoading} type="submit">
                   {isLoading ? (
                     <>
                       <Loader2 className="size-4 animate-spin" />
@@ -251,7 +289,7 @@ export default function LoginPage() {
               </div>
 
               <Button
-                className="h-11 w-full"
+                className="h-11 w-full active:scale-[0.98]"
                 disabled={anyLoading}
                 onClick={handleGuestLogin}
                 type="button"
